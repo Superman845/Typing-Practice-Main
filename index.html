@@ -1,0 +1,2951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Practice Tutor</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --error-color: #f44336;
+            --success-color: #4CAF50;
+            --key-bg: #f0f0f0;
+            --key-border: #ccc;
+            --key-active: #e0e0e0;
+            --panel-bg: #f9f9f9;
+            --border-color: #ddd;
+            --keyboard-text-color: #000000;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --key-bg: #333333;
+            --key-border: #555555;
+            --key-active: #444444;
+            --panel-bg: #2a2a2a;
+            --border-color: #555555;
+        }
+        
+        [data-theme="night"] {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --key-bg: #21262d;
+            --key-border: #30363d;
+            --key-active: #373e47;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+        }
+        
+        [data-theme="blue"] {
+            --bg-color: #e3f2fd;
+            --text-color: #0d47a1;
+            --key-bg: #bbdefb;
+            --key-border: #90caf9;
+            --key-active: #64b5f6;
+            --panel-bg: #f3e5f5;
+            --border-color: #90caf9;
+        }
+        
+        [data-theme="green"] {
+            --bg-color: #e8f5e8;
+            --text-color: #1b5e20;
+            --key-bg: #c8e6c9;
+            --key-border: #a5d6a7;
+            --key-active: #81c784;
+            --panel-bg: #f1f8e9;
+            --border-color: #a5d6a7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+            zoom: 130%;
+        }
+        
+        [data-theme="night"] body {
+            background-color: var(--bg-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .level-btn,
+        .lesson-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            background: var(--key-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .level-btn:hover,
+        .lesson-btn:hover {
+            background: var(--key-active);
+            transform: translateY(-2px);
+        }
+        
+        .level-btn.active,
+        .lesson-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .settings-btn {
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+        
+        .stats-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--panel-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        .typing-area {
+            margin-bottom: 20px;
+        }
+        
+        .text-display {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--panel-bg);
+            font-family: 'Courier New', monospace;
+            font-size: 35px;
+            line-height: 1.6;
+            min-height: 30px;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            resize: vertical;
+            display: flex;
+            /* Add this */
+            justify-content: center;
+            /* Add this */
+            align-items: center;
+            /* Add this */
+        }
+        
+        .text-container {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            will-change: transform;
+            white-space: nowrap;
+            /* Add this */
+            min-width: 100%;
+            /* Add this */
+        }
+        
+        .char {
+            font-size: inherit;
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: 0.6em;
+            text-align: center;
+        }
+        
+        .char.correct {
+            color: var(--success-color);
+            background-color: rgba(76, 175, 80, 0.1);
+            opacity: 0.3;
+        }
+        
+        .char.incorrect {
+            color: var(--error-color);
+            background-color: rgba(244, 67, 54, 0.1);
+            opacity: 0.3;
+        }
+        
+        .char.current {
+            background-color: var(--secondary-color);
+            color: white;
+            animation: blink 1s infinite;
+            opacity: 1;
+        }
+        
+        .char.upcoming {
+            opacity: 1;
+        }
+        
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+            
+            51%,
+            100% {
+                opacity: 0.3;
+            }
+        }
+        
+        .finger-hint {
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--panel-bg);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .lesson-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            background: var(--key-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: var(--key-active);
+            transform: translateY(-2px);
+        }
+        
+        .keyboard {
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .keyboard.touch-typing-enabled .key {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .keyboard.touch-typing-enabled .key:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .key {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            background: var(--key-bg);
+            border: 2px solid var(--key-border);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            position: relative;
+            color: var(--keyboard-text-color, #000) !important;
+        }
+        
+        .key:hover {
+            background: var(--key-active);
+            transform: translateY(-2px);
+        }
+        
+        .key.next {
+            background: var(--secondary-color);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        
+        /* Fix for default keyboard theme - ensure only next key is highlighted */
+       .keyboard:not(.gaming):not(.retro):not(.neon) .key.next {
+            background: #4CAF50 !important;
+             Green color
+            color: white !important;
+            border: 2px solid #45a049 !important;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5) !important;
+        }
+        
+        /* Ensure other keys in default theme don't get highlighted */
+          
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            
+            50% {
+                transform: scale(1.1);
+            }
+            
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .key.space {
+            min-width: 200px;
+        }
+        
+        .key.shift,
+        .key.ctrl,
+        .key.alt {
+            min-width: 60px;
+        }
+        
+        .key.tab {
+            min-width: 50px;
+        }
+        
+        .key.caps {
+            min-width: 70px;
+        }
+        
+        .key.enter {
+            min-width: 80px;
+        }
+        
+        .key.backspace {
+            min-width: 80px;
+        }
+        
+        /* Keyboard Themes */
+        .keyboard.gaming {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid #764ba2;
+        }
+        
+        .keyboard.gaming .key {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border: 2px solid #5a67d8;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        .keyboard.gaming .key:hover {
+            background: linear-gradient(145deg, #764ba2, #667eea);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+        
+        .keyboard.gaming .key.next {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            color: white;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+        }
+        
+        .keyboard.retro {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 2px solid #f5576c;
+        }
+        
+        .keyboard.retro .key {
+            background: linear-gradient(145deg, #f093fb, #f5576c);
+            border: 2px solid #e91e63;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        .keyboard.retro .key:hover {
+            background: linear-gradient(145deg, #f5576c, #f093fb);
+            box-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
+        }
+        
+        .keyboard.retro .key.next {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            color: white;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+        }
+        
+        .keyboard.neon {
+            background: #0a0a0a;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .keyboard.neon .key {
+            background: #1a1a1a;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+        
+        .keyboard.neon .key:hover {
+            background: #00ffff;
+            color: #000;
+            text-shadow: none;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+        
+        .keyboard.neon .key.next {
+            background: #2196F3;
+            color: #000;
+            border-color: #2196F3;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+        }
+        
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--panel-bg);
+            border-left: 2px solid var(--border-color);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 10000;
+            overflow-y: auto;
+        }
+        
+        .settings-panel.open {
+            right: 0;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .close-btn {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+        
+        .setting-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .setting-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .setting-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .setting-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .modal.open {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .level-card {
+            padding: 15px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .level-card:hover {
+            background: var(--key-active);
+            transform: translateY(-2px);
+        }
+        
+        .level-card.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .lesson-card {
+            padding: 10px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .lesson-card:hover {
+            background: var(--key-active);
+            transform: translateY(-2px);
+        }
+        
+        .lesson-card.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .custom-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fullscreen-btn:hover {
+            background: #1976D2;
+            transform: scale(1.1);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .settings-panel,
+        .modal-content {
+            overflow-y: auto !important;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Option 1: CSS Transform Override - यहाँ add करें */
+        .settings-panel,
+        .modal,
+        .modal-content {
+            transform: scale(1) !important;
+            zoom: 100% !important;
+            font-size: 14px !important;
+            z-index: 10000 !important;
+        }
+        
+        /* All panel contents को भी override करें */
+        .settings-panel *,
+        .modal *,
+        .modal-content * {
+            transform: scale(1) !important;
+            zoom: 100% !important;
+        }
+        
+        /* Panel elements को consistent रखें */
+        .level-card,
+        .lesson-card,
+        .setting-group {
+            font-size: inherit !important;
+        }
+        
+        /* Panel scrollable (2D: up-down, left-right) */
+/*.settings-panel,
+.modal.open .modal-content {
+    max-height: 90vh !important;
+    max-width: 98vw !important;
+    overflow: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: auto !important;
+}*/
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stats-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .keyboard {
+                padding: 10px;
+            }
+            
+            .key {
+                min-width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+            
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+                transform: scale(1) !important;
+                /* Force normal scale */
+                zoom: 100% !important;
+                /* Force 100% zoom */
+            }
+            
+            .modal-content {
+                transform: scale(1) !important;
+                /* Force normal scale */
+                zoom: 100% !important;
+                /* Force 100% zoom */
+            }
+            
+            .keyboard.hidden {
+                display: none !important;
+            }
+            
+            /* Zoom indicator */
+            .zoom-indicator {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(1) !important;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 24px;
+                font-weight: bold;
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+                zoom: 100% !important;
+            }
+            
+            .zoom-indicator.show {
+                opacity: 1;
+            }
+            
+            /* Panel open होने पर body scroll disable */
+            body.panel-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100vw;
+    touch-action: none;
+}
+            
+            /* Panel scrollable (up-down, left-right) */
+            .settings-panel,
+            .modal.open .modal-content {
+                overflow: auto !important;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .keyboard:not(.gaming):not(.retro):not(.neon) .key {
+                color: var(--keyboard-text-color, #000) !important;
+            }
+            
+.settings-panel,
+.modal.open .modal-content {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: auto !important;
+    z-index: 10000 !important;
+    box-sizing: border-box;
+    background: var(--panel-bg);
+}
+        
+        }
+    </style>
+</head>
+
+<body data-theme="night">
+    <div class="container">
+        <div class="header">
+            <div class="level-selector">
+                <button class="level-btn active" onclick="openLevelsModal()">Levels</button>
+                <button class="lesson-btn" onclick="openLessonsModal()">Lessons</button>
+                <button class="control-btn" onclick="showStats()">Stats</button>
+                <button id="voiceBtn" style="margin-left:10px;">🎤 Voice</button>
+               <button id="voiceHelpBtn" title="Voice Commands" style="margin-left:5px; font-size:20px; background:none; border:none; cursor:pointer;">❓</button>
+            </div>
+            <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
+        </div>
+        
+        <div class="stats-display">
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">100%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="speed">0</div>
+                <div class="stat-label">WPM</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="errors">0</div>
+                <div class="stat-label">Errors</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="time">0:00</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        
+         <div class="modal" id="voiceHelpModal">
+    <div class="modal-content" style="max-width:400px;">
+        <div class="modal-header">
+            <h3>Voice Commands</h3>
+            <button class="close-btn" onclick="closeVoiceHelpModal()">×</button>
+        </div>
+        <div style="max-height:60vh;overflow:auto;">
+            <ul style="font-size:15px;line-height:1.7;">
+                <li><b>Next lesson</b> / <b>अगला लेसन</b></li>
+                <li><b>Restart</b> / <b>फिर से शुरू</b></li>
+                <li><b>Open settings</b> / <b>सेटिंग्स खोलो</b></li>
+                <li><b>Close settings</b> / <b>सेटिंग्स बंद</b></li>
+                <li><b>Open levels</b> / <b>लेवल खोलो</b></li>
+                <li><b>Close levels</b> / <b>लेवल बंद</b></li>
+                <li><b>Open lessons</b> / <b>पाठ खोलो</b></li>
+                <li><b>Close lessons</b> / <b>पाठ बंद</b></li>
+                <li><b>Reset settings</b> / <b>सेटिंग्स रीसेट</b></li>
+                <li><b>Show stats</b> / <b>Statistics</b> / <b>Stat</b></li>
+                <li><b>Fullscreen</b> / <b>फुल स्क्रीन</b></li>
+                <li><b>Exit fullscreen</b> / <b>फुल स्क्रीन बंद</b></li>
+                <li><b>Change keyboard theme to gaming/retro/neon/default</b><br>
+                    <b>कीबोर्ड थीम गेमिंग/रेट्रो/नियॉन/डिफॉल्ट</b></li>
+                <li><b>Hide keyboard</b> / <b>कीबोर्ड छुपाओ</b></li>
+                <li><b>Show keyboard</b> / <b>कीबोर्ड दिखाओ</b></li>
+                <li><b>Zoom in</b> / <b>ज़ूम इन</b></li>
+                <li><b>Zoom out</b> / <b>ज़ूम आउट</b></li>
+                <li><b>Reset zoom</b> / <b>ज़ूम रीसेट</b></li>
+                <li><b>Type hello world</b> / <b>टाइप नमस्ते दुनिया</b></li>
+                <li><b>Change keyboard color to red/blue/green/yellow/black/white</b><br>
+                    <b>कीबोर्ड रंग लाल/नीला/हरा/पीला/काला/सफेद</b></li>
+            </ul>
+        </div>
+    </div>
+</div>
+        
+        <div class="typing-area">
+            <div class="text-display" id="textDisplay"></div>
+            <div class="finger-hint" id="fingerHint">Position your fingers on the home row</div>
+        </div>
+        
+        <div class="lesson-controls">
+            <button class="control-btn" onclick="restartLesson()">🔄 Restart</button>
+            <button class="control-btn" onclick="nextLesson()">⏭️ Next Lesson</button>
+        </div>
+        
+        <div class="keyboard touch-typing-enabled" id="keyboard"></div>
+    </div>
+    
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="close-btn" onclick="closeSettings()">❌</button>
+        </div>
+        
+        
+        <div class="setting-group">
+            <label class="setting-label">Theme</label>
+            <select class="setting-select" id="themeSelect" onchange="changeTheme()">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="night" selected>Night</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Font Size</label>
+            <input type="range" class="setting-input" id="fontSizeSlider" min="12" max="40" value="35" oninput="changeFontSize()">
+            <span id="fontSizeValue">35px</span>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Zoom Level</label>
+            <input type="range" class="setting-input" id="zoomSlider" min="50" max="200" value="130" oninput="changeZoom()">
+            <span id="zoomValue">130%</span>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Keyboard Size</label>
+            <input type="range" class="setting-input" id="keyboardSizeSlider" min="0.5" max="2" step="0.1" value="1" oninput="changeKeyboardSize()">
+            <span id="keyboardSizeValue">100%</span>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Mistake Sound</label>
+            <select class="setting-select" id="soundSelect" onchange="changeMistakeSound()">
+                <option value="sound1">Sound 1</option>
+                <option value="sound2">Sound 2</option>
+                <option value="sound3">Sound 3</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Text Box Rows</label>
+            <input type="range" class="setting-input" id="textBoxRowsSlider" min="1" max="5" value="1" oninput="changeTextBoxRows()">
+            <span id="textBoxRowsValue">1 rows</span>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Keyboard Theme</label>
+            <select class="setting-select" id="keyboardThemeSelect" onchange="changeKeyboardTheme()">
+                <option value="default">Default</option>
+                <option value="gaming">Gaming</option>
+                <option value="retro">Retro</option>
+                <option value="neon">Neon</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Keyboard Text Color</label>
+            <input type="color" class="setting-input" id="keyboardTextColorPicker" value="#000000" onchange="changeKeyboardTextColor()">
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Show Keyboard</label>
+            <select class="setting-select" id="keyboardVisibilitySelect" onchange="toggleKeyboardVisibility()">
+                <option value="show" selected>Show</option>
+                <option value="hide">Hide</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label class="setting-label">Reset Settings</label>
+            <button class="control-btn" onclick="resetAllSettings()" style="width: 100%; background: var(--error-color); color: white;">
+                🔄 Reset All Settings to Default
+            </button>
+        </div>
+    </div>
+    
+    <!-- Levels Modal -->
+    <div class="modal" id="levelsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3>Select Level</h3>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">Single-click to select, double-click to load</p>
+                </div>
+                <button class="close-btn" onclick="closeLevelsModal()">×</button>
+            </div>
+            <div class="custom-controls">
+                <button class="control-btn" onclick="addCustomLevel()">Add Level</button>
+                <button class="control-btn" onclick="editLevel()">Edit</button>
+                <button class="control-btn" onclick="deleteLevel()">Delete</button>
+                <button class="control-btn" onclick="resetLevels()">Reset</button>
+            </div>
+            <div class="levels-grid" id="levelsGrid"></div>
+        </div>
+    </div>
+    
+    <!-- Lessons Modal -->
+    <div class="modal" id="lessonsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3>Select Lesson</h3>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">Single-click to select, double-click to load</p>
+                </div>
+                <button class="close-btn" onclick="closeLessonsModal()">×</button>
+            </div>
+            <div class="custom-controls">
+                <button class="control-btn" onclick="addCustomLesson()">Add Lesson</button>
+                <button class="control-btn" onclick="editLesson()">Edit</button>
+                <button class="control-btn" onclick="deleteLesson()">Delete</button>
+                <button class="control-btn" onclick="resetLessons()">Reset</button>
+            </div>
+            <div class="lessons-grid" id="lessonsGrid"></div>
+        </div>
+    </div>
+    
+    <!-- Fullscreen Button -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+    
+    <!-- Zoom Indicator -->
+    <div class="zoom-indicator" id="zoomIndicator">130%</div>
+    
+    <script>
+        // Global variables
+        let currentLevel = 'introduction';
+        let currentLesson = 1;
+        let currentText = '';
+        let currentIndex = 0;
+        let startTime = null;
+        let errors = 0;
+        let correctChars = 0;
+        let totalChars = 0;
+        let isShiftPressed = false;
+        let timer = null;
+        
+        // Audio context for sounds
+        let audioContext = null;
+        let mistakeSounds = {
+            sound1: null,
+            sound2: null,
+            sound3: null
+        };
+        let currentMistakeSound = 'sound1';
+        let touchTypingEnabled = true; // Default to true
+        // Zoom functionality variables
+        let currentZoomLevel = 130;
+        let tapCount = 0;
+        let tapTimer = null;
+        let lastTouchDistance = 0;
+        let isZooming = false;
+        
+        // Predefined levels and lessons
+        const defaultLevels = {
+            introduction: {
+                name: 'Introduction',
+                description: 'Learn the basics of touch typing'
+            },
+            beginner: {
+                name: 'Beginner',
+                description: 'Start with home row keys'
+            },
+            intermediate: {
+                name: 'Intermediate',
+                description: 'Expand to all letters'
+            },
+            advanced: {
+                name: 'Advanced',
+                description: 'Numbers and special characters'
+            },
+            practice: {
+                name: 'Practice',
+                description: 'Real-world typing practice'
+            },
+            'Y.T Course': {
+                name: 'Y.T Course',
+                description: 'YouTube Course typing lessons'
+            }
+        };
+        
+        const defaultLessons = {
+            introduction: {
+                1: 'fff jjj fff jjj fff jjj',
+                2: 'ddd kkk ddd kkk ddd kkk',
+                3: 'sss lll sss lll sss lll',
+                4: 'aaa ;;; aaa ;;; aaa ;;;',
+                5: 'fjdk fjdk fjdk fjdk',
+                6: 'asdf jkl; asdf jkl;',
+                7: 'the quick brown fox',
+                8: 'jumps over the lazy dog',
+                9: 'hello world typing test',
+                10: 'practice makes perfect'
+            },
+            beginner: {
+                1: 'ggg hhh ggg hhh ggg hhh',
+                2: 'rrr uuu rrr uuu rrr uuu',
+                3: 'eee iii eee iii eee iii',
+                4: 'www ooo www ooo www ooo',
+                5: 'qqq ppp qqq ppp qqq ppp',
+                6: 'right hand left hand',
+                7: 'finger position matters',
+                8: 'keep your wrists straight',
+                9: 'look at the screen not keys',
+                10: 'rhythm and consistency'
+            },
+            intermediate: {
+                1: 'ttt yyy ttt yyy ttt yyy',
+                2: 'vvv nnn vvv nnn vvv nnn',
+                3: 'ccc mmm ccc mmm ccc mmm',
+                4: 'xxx ,,, xxx ,,, xxx ,,,',
+                5: 'zzz ... zzz ... zzz ...',
+                6: 'typing with all fingers',
+                7: 'smooth and steady wins',
+                8: 'accuracy over speed',
+                9: 'build muscle memory',
+                10: 'consistent practice daily'
+            },
+            advanced: {
+                1: '111 222 333 444 555',
+                2: '666 777 888 999 000',
+                3: '!@# $%^ &*( )_+ {}|',
+                4: 'The Quick Brown Fox',
+                5: 'JUMPS OVER THE LAZY DOG',
+                6: 'Numbers: 1234567890',
+                7: 'Symbols: !@#$%^&*()',
+                8: 'Mixed: Hello123 World!',
+                9: 'Email: user@example.com',
+                10: 'Code: function() { return true; }'
+            },
+            practice: {
+                1: 'The art of typing is a skill that requires patience and practice.',
+                2: 'Touch typing allows you to type without looking at the keyboard.',
+                3: 'Proper finger placement on the home row is essential for speed.',
+                4: 'Regular practice sessions will improve your typing accuracy.',
+                5: 'Maintaining good posture while typing prevents strain and injury.',
+                6: 'The quick brown fox jumps over the lazy dog near the riverbank.',
+                7: 'Programming requires fast and accurate typing skills for efficiency.',
+                8: 'Email communication in the modern workplace demands good typing.',
+                9: 'Students who can type well have an advantage in digital learning.',
+                10: 'Typing speed of 40+ WPM is considered proficient for most jobs.'
+            },
+            'Y.T Course': {
+                'Day 1': 'asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj asdf ;lkj',
+                'Day 2': 'asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfgf \';lkjhj asdfg',
+                'Day 3': 'all; all; all; all; all; ash; ash; ash; ash; ash; ask; ask; ask; ask; ask; add; add; add; add; add; has; has; has; has; has; had; had; had; had; had; sad; sad; sad; sad; sad; lad; lad; lad; lad; lad; kad; kad; kad; kad; kad; lash; lash; lash; lash; lash; gas; gas; gas; gas; gas; glass; glass; glass; glass; glass; jag; jag; jag; jag; jag; fad; fad; fad; fad; fad; dad; dad; dad; dad; dad; dalda; dalda; dalda; dalda; dalda; fall; fall; fall; fall; fall; glad; glad; glad; glad; glad; flags; flags; flags; flags; flags; halda; halda; halda; halda; halda; dash; dash; dash; dash; dash; flash; flash; flash; flash; flash; lakh; lakh; lakh; lakh; lakh; flask; flask; flask; flask; flask; kajal; kajal; kajal; kajal; kajal; jakal; jakal; jakal; jakal; jakal',
+                'Day 4': 'q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y q w e r  t p o i u y',
+                'Day 5': 'sea sea sea sea sea fee fee fee fee fee see see see see see try try try try try hit hit hit hit hit write write write write write rat rat rat rat rat hat hat hat hat hat lot lot lot lot lot did did did did did all all all all all kid kid kid kid kid oil oil oil oil oil pot pot pot pot pot toy toy toy toy toy eat eat eat eat eat tea tea tea tea tea test test test test test sit sit sit sit sit fill fill fill fill fill pat pat pat pat pat file file file file file are are are are are out out out out out ark ark ark ark ark life life life life life pity pity pity pity pity said said said said said sad sad sad sad sad tail tail tail tail tail trial trial trial trial trial easy easy easy easy easy right right right right right height height height height height white white white white white large large large large large route route route route route early early early early early root root root root root',
+                'Day 6': 'z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b z x c v /. , m n b',
+                'Day 7': 'hand hand hand hand hand small small small small small chest chest chest chest chest very very very very very hen hen hen hen hen pen pen pen pen pen time time time time time around around around around around hangs hangs hangs hangs hangs lazy lazy lazy lazy lazy son son son son son net net net net net upon upon upon upon upon rights rights rights rights rights women women women women women moral moral moral moral moral bird bird bird bird bird men men men men men habit habit habit habit habit powers powers powers powers powers borrow borrow borrow borrow borrow narrow narrow narrow narrow narrow catch catch catch catch catch vens vens vens vens vens earns earns earns earns earns school school school school school college college college college college village village village village village certain certain certain certain certain curtain curtain curtain curtain curtain zebra zebra zebra zebra zebra cutter cutter cutter cutter cutter require require require require require request request request request request beside beside beside beside beside before before before before before',
+                'Day 8': '1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 12 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6 1 2 3 4 5 0 9 8 7 6',
+                'Day 8.1': '! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^ ! @ # $ % ) ( * & ^',
+                'Day 9': 'Typing Is A Valuable Skill That Everyone Should Learn From An Early Age Whether You Are Writing Emails Reports Stories Or Even Coding The Ability To Type Fast And Accurately Can Make Your Life Easier And More Productive Each Word You Type Brings You Closer To Mastery So Keep Practicing Even If You Make Mistakes Do Not Be Discouraged Instead Use Every Error As A Learning Opportunity Stay Calm Focused And Determined To Improve With Every Session You Can Practice By Typing Meaningful Sentences Phrases And Even Creative Paragraphs That Help You Remember Proper Hand Placement And Finger Movement It May Seem Difficult At First But Over Time You Will Notice A Big Difference In Speed Confidence And Accuracy Just Remember That Practice Makes Perfect Try To Sit Comfortably With Your Feet Flat On The Floor Your Fingers Resting Lightly On The Home Row Keys And Your Eyes Focused On The Screen Not Your Keyboard This Will Train Your Muscle Memory And Help You Type Without Looking The More You Practice The Easier It Becomes Challenge Yourself By Typing Long Passages Without Pausing Or Correcting Mistakes Until The End This Will Help Build Rhythm And Endurance Over Time You Can Begin To Add Speed Tests And Try To Beat Your Own Records As You Become More Confident You Will Be Able To Handle Complex Typing Tasks With Ease Whether You Are Typing A Resume A Novel A Project Proposal Or Even A Personal Journal You Will Be Able To Complete It With Fewer Errors And Greater Efficiency Never Underestimate The Power Of A Strong Typing Foundation In A World That Relies Heavily On Digital Communication Being Able To Express Yourself Quickly And Clearly Can Give You A Huge Advantage So Keep Typing Keep Learning And Keep Pushing Forward Because You Are Capable Of Great Progress Typing Is Not Just About Speed It Is About Precision Consistency And Expression As Well When You Type With Purpose And Focus Every Word Becomes A Step Forward On Your Journey To Excellence Take Breaks When Needed Stay Hydrated And Come Back With Renewed Energy To Type Even Better Than Before Remember That Everyone Starts As A Beginner Even The Fastest Typists In The World Had To Begin With The Basics What Matters Most Is That You Keep Going Improve A Little Each Day And Stay Committed To Your Goal You Can Do This Keep Believing In Yourself And Never Stop Practicing Good Typing Skills Will Serve You For Life',
+                'Day 9.1': 'Typing!Is@Essential#For$Every%Modern)User(Who*Wants&To^Work!Faster@And#More$Effectively%Each)Day(You*Practice&Typing^Improves!Your@Speed#And$Accuracy%So)Keep(Going*Even&If^You!Make@Mistakes#In$The%Beginning)Everyone(Can*Improve&Their^Typing!Skill@Set#With$Regular%Effort)Just(Remember*That&Proper^Posture!And@Focus#Lead$To%Better)Results(Over*Time&Whether^You!Are@Typing#Reports$Emails%Or)Code(Each*Keystroke&Matters^As!You@Practice#More$Often%You)Will(Notice*Big&Improvements^Soon!Always@Use#All$Fingers%Not)Just(Index(And*Thumbs&Because^That!Helps@Build#Muscle$Memory%Quickly)Try(Different*Exercises&Stay^Motivated!Use@Challenges#To$Keep%Things)Exciting(Learn*Shortcuts&Improve^Efficiency!Keep@Your#Eyes$On%The)Screen(Not*Keyboard)&Train^Your!Mind@To#Follow$The%Text)As(You*Type&Correct^Errors!Only@After#You$Finish%The)Line(So*That&You^Maintain!Speed@And#Rhythm$Throughout%Your)Session(This*Will&Help^You!Type@Like#A$Pro%In)No(Time*Just&Be^Patient!Success@Comes#With$Daily%Practice)And(Discipline*So&Never^Give!Up@Even#If$You%Feel)Tired(Keep*Trying&Push^Your!Limits@And#You$Will%Achieve)Great(Results*Every&Day^Because!Consistency@Is#Key$To%Typing)Mastery(Take*Breaks&Stretch^Often!Drink@Water#Stay$Healthy%And)Happy(While*Practicing&Let^Typing!Become@A#Part$Of%Your)Routine(So*It&Feels^Natural!Soon@You#Will$Be%Typing)Without(Looking*And&Making^Almost!No@Mistakes#At$All%You)Will(Feel*More&Confident^In!Your@Skills#And$Complete%Tasks)Faster(Than*Ever&Before^Let!Typing@Be#Your$Superpower%In)The(Digital*World&Show^Your!Talent@Through#Words$Every%Single)Day(With*Every&Effort^You!Grow@And#Master$Each%Letter)Symbol(*And&Word^)One!Step@At#A$Time%You)Are(Growing*Into&A^Typing!Champion@So#Keep$Going%And)Never(Look*Back&Always^Look!Forward@To#Improving$Even%More)Now(Get*Ready&Go^Again!',
+                'Day 10': 'abcdefghijklmnopqrstuvwxyz',
+                'Day 10.1': 'The quick brown fox jumps upon right over a lazy dog'
+            }
+        };
+        
+        
+        // Finger mapping for hints
+        const fingerMap = {
+            'q': 'left pinky',
+            'w': 'left ring',
+            'e': 'left middle',
+            'r': 'left index',
+            't': 'left index',
+            'y': 'right index',
+            'u': 'right index',
+            'i': 'right middle',
+            'o': 'right ring',
+            'p': 'right pinky',
+            'a': 'left pinky',
+            's': 'left ring',
+            'd': 'left middle',
+            'f': 'left index',
+            'g': 'left index',
+            'h': 'right index',
+            'j': 'right index',
+            'k': 'right middle',
+            'l': 'right ring',
+            ';': 'right pinky',
+            'z': 'left pinky',
+            'x': 'left ring',
+            'c': 'left middle',
+            'v': 'left index',
+            'b': 'left index',
+            'n': 'right index',
+            'm': 'right index',
+            ',': 'right middle',
+            '.': 'right ring',
+            '/': 'right pinky',
+            ' ': 'thumbs',
+            '1': 'left pinky',
+            '2': 'left ring',
+            '3': 'left middle',
+            '4': 'left index',
+            '5': 'left index',
+            '6': 'right index',
+            '7': 'right index',
+            '8': 'right middle',
+            '9': 'right ring',
+            '0': 'right pinky'
+        };
+        
+        // Zoom functionality
+        function updateZoomLevel(newZoom) {
+            currentZoomLevel = Math.max(50, Math.min(200, newZoom));
+            document.body.style.zoom = currentZoomLevel + '%';
+            
+            // Update settings slider if it exists
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomValue = document.getElementById('zoomValue');
+            if (zoomSlider && zoomValue) {
+                zoomSlider.value = currentZoomLevel;
+                zoomValue.textContent = currentZoomLevel + '%';
+            }
+            
+            // Show zoom indicator
+            showZoomIndicator();
+            
+            // Save to localStorage
+            localStorage.setItem('zoom', currentZoomLevel);
+        }
+        
+        function showZoomIndicator() {
+            const indicator = document.getElementById('zoomIndicator');
+            indicator.textContent = currentZoomLevel + '%';
+            indicator.classList.add('show');
+            
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 1000);
+        }
+        
+        // Long press functionality (3 seconds)
+        let longPressTimer = null;
+        let isLongPressing = false;
+        
+        function handleLongPress(event) {
+            // Only on safe body areas
+            if (event.target === document.body ||
+                event.target.classList.contains('container') ||
+                event.target.classList.contains('text-display') ||
+                event.target.classList.contains('stats-display') ||
+                event.target.classList.contains('typing-area')) {
+                
+                isLongPressing = true;
+                longPressTimer = setTimeout(() => {
+                    if (isLongPressing) {
+                        updateZoomLevel(130);
+                        
+                        // Visual feedback for long press
+                        const feedback = document.createElement('div');
+                        feedback.textContent = '⏰ Long Press - Zoom Reset!';
+                        feedback.style.cssText = `
+                    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: rgba(76, 175, 80, 0.9); color: white; padding: 15px 25px;
+                    border-radius: 10px; z-index: 9999; font-weight: bold; font-size: 18px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                `;
+                        document.body.appendChild(feedback);
+                        setTimeout(() => feedback.remove(), 1500);
+                    }
+                }, 3000); // 3 seconds
+            }
+        }
+        
+        function cancelLongPress() {
+            isLongPressing = false;
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        }
+        
+        function handleDoubleTap(event) {
+            // Allow double tap on safe areas including text-display and stats-display
+            const isAllowedArea = event.target === document.body ||
+                event.target.classList.contains('container') ||
+                event.target.classList.contains('text-display') ||
+                event.target.classList.contains('text-container') ||
+                event.target.classList.contains('stats-display') ||
+                event.target.classList.contains('stat-item') ||
+                event.target.classList.contains('stat-value') ||
+                event.target.classList.contains('stat-label');
+            
+            // Exclude interactive elements
+            const isExcludedElement = event.target.closest('.keyboard') ||
+                event.target.closest('.key') ||
+                event.target.closest('.settings-panel') ||
+                event.target.closest('.modal') ||
+                event.target.closest('.levels-grid') ||
+                event.target.closest('.lessons-grid') ||
+                event.target.closest('.level-card') ||
+                event.target.closest('.lesson-card') ||
+                event.target.closest('.level-btn') ||
+                event.target.closest('.lesson-btn') ||
+                event.target.closest('.settings-btn') ||
+                event.target.closest('.control-btn') ||
+                event.target.closest('.fullscreen-btn') ||
+                event.target.closest('.close-btn') ||
+                event.target.closest('.custom-controls') ||
+                event.target.closest('.lesson-controls') ||
+                event.target.closest('.header') ||
+                event.target.closest('.setting-group') ||
+                event.target.closest('.modal-header') ||
+                event.target.closest('.char') ||
+                event.target.closest('.finger-hint') ||
+                event.target.closest('button') ||
+                event.target.closest('input') ||
+                event.target.closest('select') ||
+                event.target.closest('h3') ||
+                event.target.closest('h4') ||
+                event.target.closest('p') ||
+                event.target.closest('label') ||
+                event.target.closest('span');
+            
+            // Only proceed if it's an allowed area and not an excluded element
+            if (isAllowedArea && !isExcludedElement) {
+                tapCount++;
+                
+                if (tapCount === 1) {
+                    tapTimer = setTimeout(() => {
+                        tapCount = 0;
+                    }, 300);
+                } else if (tapCount === 2) {
+                    clearTimeout(tapTimer);
+                    tapCount = 0;
+                    
+                    // Reset zoom to default 130%
+                    updateZoomLevel(130);
+                    event.preventDefault();
+                    
+                    // Visual feedback
+                    const feedback = document.createElement('div');
+                    feedback.textContent = '👆 Double Tap - Zoom Reset!';
+                    feedback.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: rgba(255, 152, 0, 0.9); color: white; padding: 15px 25px;
+                border-radius: 10px; z-index: 9999; font-weight: bold; font-size: 18px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+                    document.body.appendChild(feedback);
+                    setTimeout(() => feedback.remove(), 1500);
+                }
+            }
+        }
+        
+        function getTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function handleTouchStart(event) {
+            if (event.touches.length === 2) {
+                lastTouchDistance = getTouchDistance(event.touches);
+                isZooming = true;
+                event.preventDefault();
+            } else if (event.touches.length === 1) {
+                handleDoubleTap(event);
+            }
+        }
+        
+        function handleTouchMove(event) {
+            if (event.touches.length === 2 && isZooming) {
+                const currentDistance = getTouchDistance(event.touches);
+                const scale = currentDistance / lastTouchDistance;
+                
+                if (Math.abs(scale - 1) > 0.01) {
+                    const zoomChange = (scale - 1) * 50;
+                    updateZoomLevel(currentZoomLevel + zoomChange);
+                    lastTouchDistance = currentDistance;
+                }
+                
+                event.preventDefault();
+            } else if (event.touches.length === 1) {
+                // Cancel long press if finger moves too much
+                const touch = event.touches[0];
+                const moveThreshold = 10; // pixels
+                
+                if (Math.abs(touch.clientX - (touch.startX || touch.clientX)) > moveThreshold ||
+                    Math.abs(touch.clientY - (touch.startY || touch.clientY)) > moveThreshold) {
+                    cancelLongPress();
+                }
+            }
+        }
+        
+        function handleTouchEnd(event) {
+            if (event.touches.length < 2) {
+                isZooming = false;
+            }
+            
+            // Cancel long press when touch ends (if not completed)
+            cancelLongPress();
+        }
+        
+        function handleWheel(event) {
+            // Check if Ctrl key is pressed for zoom
+            if (event.ctrlKey) {
+                event.preventDefault();
+                const zoomChange = event.deltaY > 0 ? -10 : 10;
+                updateZoomLevel(currentZoomLevel + zoomChange);
+            }
+        }
+        
+        function init() {
+            loadSettings();
+            createKeyboard();
+            loadLevels();
+            loadLessons();
+            generateMistakeSounds();
+            
+            // Always enable touch typing
+            touchTypingEnabled = true;
+            const keyboard = document.getElementById('keyboard');
+            keyboard.classList.add('touch-typing-enabled');
+            enableKeyboardClicks();
+            
+            loadLesson();
+            
+            // Add event listeners
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            document.addEventListener('click', handleBodyClick);
+            
+            // Add zoom event listeners
+            document.addEventListener('touchstart', handleTouchStart, { passive: false });
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd, { passive: false });
+            document.addEventListener('wheel', handleWheel, { passive: false });
+            
+            // Keyboard shortcut for zoom reset (Ctrl + 0) - यहाँ add करें
+            document.addEventListener('keydown', function(event) {
+                if (event.ctrlKey && event.key === '0') {
+                    event.preventDefault();
+                    updateZoomLevel(130);
+                    
+                    // Visual feedback for keyboard shortcut
+                    const feedback = document.createElement('div');
+                    feedback.textContent = '⌨️ Ctrl+0 - Zoom Reset!';
+                    feedback.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: rgba(33, 150, 243, 0.9); color: white; padding: 15px 25px;
+                border-radius: 10px; z-index: 9999; font-weight: bold; font-size: 18px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            `;
+                    document.body.appendChild(feedback);
+                    setTimeout(() => feedback.remove(), 1500);
+                }
+            }, { passive: false });
+            
+            // Add fullscreen event listeners (Step 2 - moved inside init)
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+            
+            // Handle F11 and Escape key behavior (Step 2 - moved inside init)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'F11') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!document.fullscreenElement) {
+                        enterFullscreen();
+                    }
+                }
+            }, { capture: true, passive: false });
+            
+            // Separate listener for Escape key (Step 2 - moved inside init)
+            document.addEventListener('keyup', function(event) {
+                if (event.key === 'Escape' && document.fullscreenElement) {
+                    const modalsOpen = document.querySelector('.modal.open') ||
+                        document.querySelector('.settings-panel.open');
+                    
+                    if (!modalsOpen) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
+                }
+            }, { passive: false });
+            
+            // Step 3: Page visibility handlers (moved inside init)
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && !document.fullscreenElement) {
+                    setTimeout(() => {
+                        enterFullscreen();
+                    }, 500);
+                }
+            });
+            
+            window.addEventListener('focus', function() {
+                if (!document.fullscreenElement) {
+                    setTimeout(() => {
+                        enterFullscreen();
+                    }, 200);
+                }
+            });
+            
+            // Step 4: Request fullscreen on load
+            setTimeout(() => {
+                enterFullscreen();
+            }, 100);
+            
+            setTimeout(() => {
+                if (!document.fullscreenElement) {
+                    enterFullscreen();
+                }
+            }, 1000);
+        }
+        // Create virtual keyboard
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const rows = [
+                ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace'],
+                ['tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+                ['caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'enter'],
+                ['shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'shift'],
+                ['ctrl', 'alt', 'space', 'alt', 'ctrl']
+            ];
+            
+            keyboard.innerHTML = '';
+            rows.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keyboard-row';
+                
+                row.forEach(key => {
+                    const keyDiv = document.createElement('div');
+                    keyDiv.className = `key ${key}`;
+                    keyDiv.setAttribute('data-key', key);
+                    
+                    if (key === 'space') {
+                        keyDiv.textContent = '';
+                        keyDiv.className += ' space';
+                    } else if (key === 'backspace') {
+                        keyDiv.textContent = '⌫';
+                        keyDiv.className += ' backspace';
+                    } else if (key === 'enter') {
+                        keyDiv.textContent = '↵';
+                        keyDiv.className += ' enter';
+                    } else if (key === 'shift') {
+                        keyDiv.textContent = '⇧';
+                        keyDiv.className += ' shift';
+                    } else if (key === 'tab') {
+                        keyDiv.textContent = '⇥';
+                        keyDiv.className += ' tab';
+                    } else if (key === 'caps') {
+                        keyDiv.textContent = '⇪';
+                        keyDiv.className += ' caps';
+                    } else if (key === 'ctrl') {
+                        keyDiv.textContent = 'Ctrl';
+                        keyDiv.className += ' ctrl';
+                    } else if (key === 'alt') {
+                        keyDiv.textContent = 'Alt';
+                        keyDiv.className += ' alt';
+                    } else {
+                        keyDiv.textContent = key;
+                    }
+                    
+                    rowDiv.appendChild(keyDiv);
+                });
+                
+                keyboard.appendChild(rowDiv);
+            });
+        }
+        
+        // Handle key press
+        function handleKeyDown(event) {
+            const key = event.key;
+            const keyCode = event.keyCode;
+            
+            // Handle shift key
+            if (key === 'Shift') {
+                isShiftPressed = true;
+                updateKeyboardShift();
+                return;
+            }
+            
+            // Prevent default behavior for typing keys
+            if (keyCode >= 32 && keyCode <= 126) {
+                event.preventDefault();
+            }
+            
+            // Process the typed character
+            processTypedCharacter(key);
+        }
+        
+        function handleKeyUp(event) {
+            const key = event.key;
+            
+            if (key === 'Shift') {
+                isShiftPressed = false;
+                updateKeyboardShift();
+            }
+        }
+        
+        // Update keyboard display for shift state
+        function updateKeyboardShift() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                const keyData = key.getAttribute('data-key');
+                if (isShiftPressed) {
+                    switch (keyData) {
+                        case '1':
+                            key.textContent = '!';
+                            break;
+                        case '2':
+                            key.textContent = '@';
+                            break;
+                        case '3':
+                            key.textContent = '#';
+                            break;
+                        case '4':
+                            key.textContent = '$';
+                            break;
+                        case '5':
+                            key.textContent = '%';
+                            break;
+                        case '6':
+                            key.textContent = '^';
+                            break;
+                        case '7':
+                            key.textContent = '&';
+                            break;
+                        case '8':
+                            key.textContent = '*';
+                            break;
+                        case '9':
+                            key.textContent = '(';
+                            break;
+                        case '0':
+                            key.textContent = ')';
+                            break;
+                        case '-':
+                            key.textContent = '_';
+                            break;
+                        case '=':
+                            key.textContent = '+';
+                            break;
+                        case '[':
+                            key.textContent = '{';
+                            break;
+                        case ']':
+                            key.textContent = '}';
+                            break;
+                        case '\\':
+                            key.textContent = '|';
+                            break;
+                        case ';':
+                            key.textContent = ':';
+                            break;
+                        case "'":
+                            key.textContent = '"';
+                            break;
+                        case ',':
+                            key.textContent = '<';
+                            break;
+                        case '.':
+                            key.textContent = '>';
+                            break;
+                        case '/':
+                            key.textContent = '?';
+                            break;
+                        case '`':
+                            key.textContent = '~';
+                            break;
+                        default:
+                            if (keyData.length === 1 && keyData.match(/[a-z]/)) {
+                                key.textContent = keyData.toUpperCase();
+                            }
+                    }
+                } else {
+                    // Reset to normal state
+                    if (keyData === 'space') {
+                        key.textContent = '';
+                    } else if (keyData === 'backspace') {
+                        key.textContent = '⌫';
+                    } else if (keyData === 'enter') {
+                        key.textContent = '↵';
+                    } else if (keyData === 'shift') {
+                        key.textContent = '⇧';
+                    } else if (keyData === 'tab') {
+                        key.textContent = '⇥';
+                    } else if (keyData === 'caps') {
+                        key.textContent = '⇪';
+                    } else if (keyData === 'ctrl') {
+                        key.textContent = 'Ctrl';
+                    } else if (keyData === 'alt') {
+                        key.textContent = 'Alt';
+                    } else {
+                        key.textContent = keyData;
+                    }
+                }
+            });
+        }
+        
+        function processTypedCharacter(key) {
+            if (currentIndex >= currentText.length) return;
+            
+            const expectedChar = currentText[currentIndex];
+            const typedChar = key;
+            
+            // Start timer on first keypress
+            if (startTime === null) {
+                startTime = Date.now();
+                startTimer();
+            }
+            
+            const charElement = document.querySelector(`[data-index="${currentIndex}"]`);
+            
+            if (typedChar === expectedChar) {
+                // Correct character
+                charElement.classList.remove('current', 'upcoming');
+                charElement.classList.add('correct');
+                correctChars++;
+                currentIndex++;
+                
+                // Update current character highlight
+                updateCurrentCharacterHighlight();
+                
+                // Update scroll position
+                updateScrollPosition();
+                
+                // Update next character highlight on keyboard (ONLY ONCE)
+                updateNextCharacterHighlight();
+                updateFingerHint();
+                
+                // Check if lesson is complete
+                if (currentIndex >= currentText.length) {
+                    completeLesson();
+                }
+            } else {
+                // Incorrect character
+                charElement.classList.remove('current', 'upcoming');
+                charElement.classList.add('incorrect');
+                errors++;
+                playMistakeSound();
+                
+                // Move to next character even on error
+                currentIndex++;
+                
+                // Update current character highlight
+                updateCurrentCharacterHighlight();
+                
+                // Update scroll position
+                updateScrollPosition();
+                
+                // Update next character highlight on keyboard (ONLY ONCE)
+                updateNextCharacterHighlight();
+                updateFingerHint();
+                
+                // Check if lesson is complete
+                if (currentIndex >= currentText.length) {
+                    completeLesson();
+                }
+            }
+            
+            totalChars++;
+            updateStats();
+        }
+        
+        // Update current character highlight
+        function updateCurrentCharacterHighlight() {
+            // Remove previous current highlights
+            document.querySelectorAll('.char.current').forEach(char => {
+                char.classList.remove('current');
+                if (parseInt(char.getAttribute('data-index')) > currentIndex) {
+                    char.classList.add('upcoming');
+                }
+            });
+            
+            // Add current highlight to new character
+            if (currentIndex < currentText.length) {
+                const currentChar = document.querySelector(`[data-index="${currentIndex}"]`);
+                if (currentChar) {
+                    currentChar.classList.remove('upcoming');
+                    currentChar.classList.add('current');
+                }
+            }
+        }
+        
+        // Update scroll position to keep current character at the center
+        function updateScrollPosition() {
+            const textContainer = document.getElementById('textContainer');
+            const textDisplay = document.getElementById('textDisplay');
+            
+            if (!textContainer || !textDisplay) return;
+            
+            // Calculate character width (approximate)
+            const charWidth = parseFloat(getComputedStyle(textDisplay).fontSize) * 0.6;
+            
+            // Get the width of the text display container
+            const containerWidth = textDisplay.clientWidth;
+            
+            // Calculate the center position
+            const centerPosition = containerWidth / 2;
+            
+            // Calculate scroll offset to keep current character at the center
+            const scrollOffset = (currentIndex * charWidth) - centerPosition + (charWidth / 2);
+            
+            // Apply smooth transform
+            textContainer.style.transform = `translateX(-${Math.max(0, scrollOffset)}px)`;
+        }
+        
+        // Update next character highlight on keyboard (Only highlight next key)
+        function updateNextCharacterHighlight() {
+            // Remove ALL previous highlights first
+            document.querySelectorAll('.key.next').forEach(key => {
+                key.classList.remove('next');
+            });
+            
+            // Only highlight if there's a next character to type
+            if (currentIndex < currentText.length) {
+                const nextChar = currentText[currentIndex];
+                let keyToHighlight = nextChar.toLowerCase();
+                
+                // Handle special characters
+                if (nextChar === ' ') {
+                    keyToHighlight = 'space';
+                } else if (nextChar.match(/[A-Z]/)) {
+                    keyToHighlight = nextChar.toLowerCase();
+                    // Also highlight shift key for uppercase letters
+                    document.querySelectorAll('[data-key="shift"]').forEach(key => {
+                        key.classList.add('next');
+                    });
+                } else if ('!@#$%^&*()_+{}|:"<>?~'.includes(nextChar)) {
+                    // Handle shift + number/symbol combinations
+                    const shiftMap = {
+                        '!': '1',
+                        '@': '2',
+                        '#': '3',
+                        '$': '4',
+                        '%': '5',
+                        '^': '6',
+                        '&': '7',
+                        '*': '8',
+                        '(': '9',
+                        ')': '0',
+                        '_': '-',
+                        '+': '=',
+                        '{': '[',
+                        '}': ']',
+                        '|': '\\',
+                        ':': ';',
+                        '"': "'",
+                        '<': ',',
+                        '>': '.',
+                        '?': '/',
+                        '~': '`'
+                    };
+                    keyToHighlight = shiftMap[nextChar] || nextChar;
+                    // Also highlight shift key for special characters
+                    document.querySelectorAll('[data-key="shift"]').forEach(key => {
+                        key.classList.add('next');
+                    });
+                }
+                
+                // Highlight the main key
+                const keyElement = document.querySelector(`[data-key="${keyToHighlight}"]`);
+                if (keyElement) {
+                    keyElement.classList.add('next');
+                }
+            }
+        }
+        
+        // Update finger hint
+        function updateFingerHint() {
+            const fingerHint = document.getElementById('fingerHint');
+            
+            if (currentIndex < currentText.length) {
+                const nextChar = currentText[currentIndex].toLowerCase();
+                const finger = fingerMap[nextChar] || 'appropriate finger';
+                const charDisplay = currentText[currentIndex] === ' ' ? 'space' : currentText[currentIndex];
+                
+                let hint = `Next: "${charDisplay}" - Use ${finger}`;
+                
+                // Add shift instruction if needed
+                if (currentText[currentIndex].match(/[A-Z]/) || '!@#$%^&*()_+{}|:"<>?~'.includes(currentText[currentIndex])) {
+                    hint += ' (with Shift)';
+                }
+                
+                fingerHint.textContent = hint;
+            } else {
+                fingerHint.textContent = 'Lesson complete!';
+            }
+        }
+        
+        function loadLesson() {
+            const levels = JSON.parse(localStorage.getItem('customLevels')) || defaultLevels;
+            const lessons = JSON.parse(localStorage.getItem('customLessons')) || defaultLessons;
+            
+            currentText = lessons[currentLevel]?.[currentLesson] || 'Sample text for typing practice.';
+            currentIndex = 0;
+            errors = 0;
+            correctChars = 0;
+            totalChars = 0;
+            startTime = null;
+            
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            displayText();
+            updateStats();
+            updateNextCharacterHighlight(); // Only once here
+            updateFingerHint();
+        }
+        
+        // Display text with character spans and scrolling container
+        function displayText() {
+            const textDisplay = document.getElementById('textDisplay');
+            textDisplay.innerHTML = '';
+            
+            // Create container for smooth scrolling
+            const textContainer = document.createElement('div');
+            textContainer.className = 'text-container';
+            textContainer.id = 'textContainer';
+            
+            for (let i = 0; i < currentText.length; i++) {
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.setAttribute('data-index', i);
+                span.textContent = currentText[i];
+                
+                if (i === currentIndex) {
+                    span.classList.add('current');
+                } else if (i > currentIndex) {
+                    span.classList.add('upcoming');
+                }
+                
+                textContainer.appendChild(span);
+            }
+            
+            textDisplay.appendChild(textContainer);
+            
+            // Add this line for initial center positioning
+            setTimeout(() => {
+                updateScrollPosition();
+            }, 50);
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+            const timeElapsed = startTime ? (Date.now() - startTime) / 1000 : 0;
+            const wpm = timeElapsed > 0 ? Math.round((correctChars / 5) / (timeElapsed / 60)) : 0;
+            
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            document.getElementById('speed').textContent = wpm;
+            document.getElementById('errors').textContent = errors;
+        }
+        
+        // Start timer
+        function startTimer() {
+            timer = setInterval(() => {
+                if (startTime) {
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('time').textContent =
+                        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+        
+        // Complete lesson
+        function completeLesson() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            // Save lesson statistics
+            saveLessonStats();
+            
+            // Show completion message
+            setTimeout(() => {
+                alert('Lesson completed! Great job!');
+            }, 500);
+        }
+        
+        // Save lesson statistics
+        function saveLessonStats() {
+            const stats = JSON.parse(localStorage.getItem('lessonStats')) || {};
+            const key = `${currentLevel}-${currentLesson}`;
+            
+            const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+            const timeElapsed = startTime ? (Date.now() - startTime) / 1000 : 0;
+            const wpm = timeElapsed > 0 ? Math.round((correctChars / 5) / (timeElapsed / 60)) : 0;
+            
+            stats[key] = {
+                accuracy,
+                wpm,
+                errors,
+                time: timeElapsed,
+                date: new Date().toISOString()
+            };
+            
+            localStorage.setItem('lessonStats', JSON.stringify(stats));
+        }
+        
+        // Generate mistake sounds
+        function generateMistakeSounds() {
+            try {
+                const context = new(window.AudioContext || window.webkitAudioContext)();
+                const frequencies = [800, 600, 400];
+                
+                frequencies.forEach((freq, index) => {
+                    const soundKey = `sound${index + 1}`;
+                    mistakeSounds[soundKey] = () => {
+                        const oscillator = context.createOscillator();
+                        const gainNode = context.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(context.destination);
+                        
+                        oscillator.frequency.setValueAtTime(freq, context.currentTime);
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0.1, context.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+                        
+                        oscillator.start(context.currentTime);
+                        oscillator.stop(context.currentTime + 0.2);
+                    };
+                });
+            } catch (error) {
+                console.log('Audio context not available');
+            }
+        }
+        
+        // Play mistake sound
+        function playMistakeSound() {
+            if (mistakeSounds[currentMistakeSound]) {
+                mistakeSounds[currentMistakeSound]();
+            }
+        }
+        
+        // Settings functions
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                document.body.classList.add('panel-open');
+            } else {
+                document.body.classList.remove('panel-open');
+            }
+        }
+        
+        function closeSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.remove('open');
+            document.body.classList.remove('panel-open');
+        }
+        
+        function changeTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+        
+        function changeFontSize() {
+            const size = document.getElementById('fontSizeSlider').value;
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            document.getElementById('textDisplay').style.fontSize = size + 'px';
+            localStorage.setItem('fontSize', size);
+        }
+        
+        function changeKeyboardTextColor() {
+            const color = document.getElementById('keyboardTextColorPicker').value;
+            document.documentElement.style.setProperty('--keyboard-text-color', color);
+            localStorage.setItem('keyboardTextColor', color);
+            // Update all keys immediately
+            document.querySelectorAll('.key').forEach(key => {
+                key.style.color = color;
+            });
+        }
+        
+        function changeZoom() {
+            const zoom = document.getElementById('zoomSlider').value;
+            updateZoomLevel(parseInt(zoom));
+        }
+        
+        function changeKeyboardSize() {
+            const size = document.getElementById('keyboardSizeSlider').value;
+            document.getElementById('keyboardSizeValue').textContent = Math.round(size * 100) + '%';
+            document.getElementById('keyboard').style.transform = `scale(${size})`;
+            localStorage.setItem('keyboardSize', size);
+        }
+        
+        function changeMistakeSound() {
+            currentMistakeSound = document.getElementById('soundSelect').value;
+            localStorage.setItem('mistakeSound', currentMistakeSound);
+        }
+        
+        function changeTextBoxRows() {
+            const rows = document.getElementById('textBoxRowsSlider').value;
+            document.getElementById('textBoxRowsValue').textContent = rows + ' rows';
+            const textDisplay = document.getElementById('textDisplay');
+            textDisplay.style.minHeight = (rows * 30) + 'px';
+            localStorage.setItem('textBoxRows', rows);
+        }
+        
+        function changeKeyboardTheme() {
+            const theme = document.getElementById('keyboardThemeSelect').value;
+            const keyboard = document.getElementById('keyboard');
+            
+            const keyboardVisibility = localStorage.getItem('keyboardVisibility') || 'show';
+            document.getElementById('keyboardVisibilitySelect').value = keyboardVisibility;
+            if (keyboardVisibility === 'hide') {
+                keyboard.classList.add('hidden');
+            } else {
+                keyboard.classList.remove('hidden');
+            }
+            
+            // Remove all theme classes first
+            keyboard.classList.remove('gaming', 'retro', 'neon');
+            
+            // Add new theme class if not default
+            if (theme !== 'default') {
+                keyboard.classList.add(theme);
+            }
+            
+            localStorage.setItem('keyboardTheme', theme);
+        }
+        
+        function toggleKeyboardVisibility() {
+            const visibility = document.getElementById('keyboardVisibilitySelect').value;
+            const keyboard = document.getElementById('keyboard');
+            
+            if (visibility === 'hide') {
+                keyboard.classList.add('hidden');
+            } else {
+                keyboard.classList.remove('hidden');
+            }
+            
+            localStorage.setItem('keyboardVisibility', visibility);
+        }
+        
+        function toggleTouchTyping() {
+            // Touch typing is always enabled now
+            touchTypingEnabled = true;
+            const keyboard = document.getElementById('keyboard');
+            keyboard.classList.add('touch-typing-enabled');
+            enableKeyboardClicks();
+            localStorage.setItem('touchTypingEnabled', true);
+        }
+        
+        function enableKeyboardClicks() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                key.addEventListener('click', handleKeyClick);
+            });
+        }
+        
+        function disableKeyboardClicks() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                key.removeEventListener('click', handleKeyClick);
+            });
+        }
+        
+        function handleKeyClick(event) {
+            const keyElement = event.target;
+            const keyData = keyElement.getAttribute('data-key');
+            
+            if (!keyData) return;
+            
+            let keyToType = '';
+            
+            // Handle special keys
+            if (keyData === 'space') {
+                keyToType = ' ';
+            } else if (keyData === 'backspace') {
+                // Handle backspace functionality
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    const charElement = document.querySelector(`[data-index="${currentIndex}"]`);
+                    if (charElement) {
+                        charElement.classList.remove('correct', 'incorrect');
+                    }
+                    updateCurrentCharacterHighlight();
+                    updateScrollPosition();
+                    updateNextCharacterHighlight();
+                    updateFingerHint();
+                    updateStats();
+                }
+                return;
+            } else if (keyData === 'enter') {
+                keyToType = '\n';
+            } else if (keyData === 'tab') {
+                keyToType = '\t';
+            } else if (['shift', 'ctrl', 'alt', 'caps'].includes(keyData)) {
+                // Handle modifier keys
+                if (keyData === 'shift') {
+                    isShiftPressed = !isShiftPressed;
+                    updateKeyboardShift();
+                }
+                return;
+            } else {
+                // Handle regular keys
+                if (isShiftPressed) {
+                    // Handle shift combinations
+                    const shiftMap = {
+                        '1': '!',
+                        '2': '@',
+                        '3': '#',
+                        '4': '$',
+                        '5': '%',
+                        '6': '^',
+                        '7': '&',
+                        '8': '*',
+                        '9': '(',
+                        '0': ')',
+                        '-': '_',
+                        '=': '+',
+                        '[': '{',
+                        ']': '}',
+                        '\\': '|',
+                        ';': ':',
+                        "'": '"',
+                        ',': '<',
+                        '.': '>',
+                        '/': '?',
+                        '`': '~'
+                    };
+                    
+                    if (shiftMap[keyData]) {
+                        keyToType = shiftMap[keyData];
+                    } else if (keyData.match(/[a-z]/)) {
+                        keyToType = keyData.toUpperCase();
+                    } else {
+                        keyToType = keyData;
+                    }
+                } else {
+                    keyToType = keyData;
+                }
+            }
+            
+            // Simulate key press
+            if (keyToType) {
+                // Add visual feedback
+                keyElement.classList.add('active');
+                setTimeout(() => {
+                    keyElement.classList.remove('active');
+                }, 150);
+                
+                // Process the typed character
+                processTypedCharacter(keyToType);
+            }
+        }
+        
+        function resetAllSettings() {
+            if (confirm('Are you sure you want to reset all settings to default values? This will clear all your customizations!')) {
+                // Clear all localStorage settings
+                localStorage.removeItem('theme');
+                localStorage.removeItem('fontSize');
+                localStorage.removeItem('zoom');
+                localStorage.removeItem('keyboardSize');
+                localStorage.removeItem('mistakeSound');
+                localStorage.removeItem('textBoxRows');
+                localStorage.removeItem('keyboardTheme');
+                localStorage.removeItem('touchTypingEnabled');
+                localStorage.removeItem('keyboardVisibility');
+                
+                // Reset to default values
+                document.body.setAttribute('data-theme', 'night');
+                document.getElementById('themeSelect').value = 'night';
+                
+                document.getElementById('fontSizeSlider').value = '35';
+                document.getElementById('fontSizeValue').textContent = '35px';
+                document.getElementById('textDisplay').style.fontSize = '35px';
+                
+                updateZoomLevel(130); // ← यहाँ बदलाव
+                
+                document.getElementById('keyboardSizeSlider').value = '1';
+                document.getElementById('keyboardSizeValue').textContent = '100%';
+                document.getElementById('keyboard').style.transform = 'scale(1)';
+                
+                document.getElementById('soundSelect').value = 'sound1';
+                currentMistakeSound = 'sound1';
+                
+                document.getElementById('textBoxRowsSlider').value = '1';
+                document.getElementById('textBoxRowsValue').textContent = '1 rows';
+                document.getElementById('textDisplay').style.minHeight = '30px';
+                
+                document.getElementById('keyboardThemeSelect').value = 'default';
+                const keyboard = document.getElementById('keyboard');
+                keyboard.classList.remove('gaming', 'retro', 'neon');
+                
+                document.getElementById('keyboardVisibilitySelect').value = 'show';
+                keyboard.classList.remove('hidden');
+                
+                touchTypingEnabled = true;
+                keyboard.classList.add('touch-typing-enabled');
+                enableKeyboardClicks();
+                
+                touchTypingEnabled = true;
+                keyboard.classList.add('touch-typing-enabled');
+                enableKeyboardClicks();
+                
+                alert('All settings have been reset to default values!');
+            }
+        }
+        
+        // Load settings from localStorage
+        function loadSettings() {
+            const theme = localStorage.getItem('theme') || 'night';
+            const fontSize = localStorage.getItem('fontSize') || '35';
+            const zoom = localStorage.getItem('zoom') || '130';
+            const keyboardTextColor = localStorage.getItem('keyboardTextColor') || '#000000';
+            const keyboardSize = localStorage.getItem('keyboardSize') || '1';
+            const mistakeSound = localStorage.getItem('mistakeSound') || 'sound1';
+            const textBoxRows = localStorage.getItem('textBoxRows') || '1';
+            const keyboardTheme = localStorage.getItem('keyboardTheme') || 'default';
+            const touchTyping = localStorage.getItem('touchTypingEnabled') !== null ?
+                localStorage.getItem('touchTypingEnabled') === 'true' : true; // Default to true
+            
+            document.body.setAttribute('data-theme', theme);
+            document.getElementById('themeSelect').value = theme;
+            
+            document.getElementById('fontSizeSlider').value = fontSize;
+            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+            document.getElementById('textDisplay').style.fontSize = fontSize + 'px';
+            
+            document.getElementById('zoomSlider').value = zoom;
+            document.getElementById('zoomValue').textContent = zoom + '%';
+            document.body.style.zoom = zoom + '%';
+            
+            document.getElementById('keyboardTextColorPicker').value = keyboardTextColor;
+            document.documentElement.style.setProperty('--keyboard-text-color', keyboardTextColor);
+            document.querySelectorAll('.key').forEach(key => {
+                key.style.color = keyboardTextColor;
+            });
+            
+            document.getElementById('keyboardSizeSlider').value = keyboardSize;
+            document.getElementById('keyboardSizeValue').textContent = Math.round(keyboardSize * 100) + '%';
+            document.getElementById('keyboard').style.transform = `scale(${keyboardSize})`;
+            
+            document.getElementById('soundSelect').value = mistakeSound;
+            currentMistakeSound = mistakeSound;
+            
+            // Load zoom level
+            currentZoomLevel = parseInt(zoom);
+            
+            document.getElementById('textBoxRowsSlider').value = textBoxRows;
+            document.getElementById('textBoxRowsValue').textContent = textBoxRows + ' rows';
+            document.getElementById('textDisplay').style.minHeight = (textBoxRows * 30) + 'px';
+            
+            document.getElementById('keyboardThemeSelect').value = keyboardTheme;
+            const keyboard = document.getElementById('keyboard');
+            keyboard.classList.remove('gaming', 'retro', 'neon');
+            if (keyboardTheme !== 'default') {
+                keyboard.classList.add(keyboardTheme);
+            }
+            
+            // Touch typing is always enabled
+            touchTypingEnabled = true;
+            keyboard.classList.add('touch-typing-enabled');
+            enableKeyboardClicks();
+        }
+        
+        // Modal functions
+        function openLevelsModal() {
+            selectedLevel = null; // Reset selection when opening
+            document.getElementById('levelsModal').classList.add('open');
+            document.body.classList.add('panel-open');
+            loadLevels();
+        }
+        
+        function closeLevelsModal() {
+            selectedLevel = null; // Reset selection when closing
+            document.getElementById('levelsModal').classList.remove('open');
+            document.body.classList.remove('panel-open');
+        }
+        
+        function openLessonsModal() {
+            selectedLesson = null; // Reset selection when opening
+            document.getElementById('lessonsModal').classList.add('open');
+            document.body.classList.add('panel-open');
+            loadLessons();
+        }
+        
+        function closeLessonsModal() {
+            selectedLesson = null; // Reset selection when closing
+            document.getElementById('lessonsModal').classList.remove('open');
+            document.body.classList.remove('panel-open');
+        }
+        
+// Voice Help Modal Open/Close
+document.getElementById('voiceHelpBtn').onclick = function() {
+    document.getElementById('voiceHelpModal').classList.add('open');
+    document.body.classList.add('panel-open');
+};
+function closeVoiceHelpModal() {
+    document.getElementById('voiceHelpModal').classList.remove('open');
+    document.body.classList.remove('panel-open');
+}
+        
+        // Load levels into modal
+        function loadLevels() {
+            const levels = JSON.parse(localStorage.getItem('customLevels')) || { ...defaultLevels };
+            const grid = document.getElementById('levelsGrid');
+            grid.innerHTML = '';
+            
+            Object.keys(levels).forEach(levelKey => {
+                const level = levels[levelKey];
+                const card = document.createElement('div');
+                card.className = 'level-card';
+                if (levelKey === currentLevel) {
+                    card.classList.add('active');
+                }
+                if (levelKey === selectedLevel) {
+                    card.style.border = '3px solid #FF9800';
+                    card.style.backgroundColor = '#FFF3E0';
+                }
+                
+                // Add custom level indicator
+                const isCustom = !defaultLevels[levelKey];
+                card.innerHTML = `
+                    <h4>${level.name} ${isCustom ? '(Custom)' : ''}</h4>
+                    <p>${level.description}</p>
+                `;
+                
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    
+                    // Double-click to load level
+                    if (e.detail === 2) {
+                        currentLevel = levelKey;
+                        currentLesson = 1;
+                        loadLesson();
+                        closeLevelsModal();
+                    } else {
+                        // Single click to select
+                        selectedLevel = levelKey;
+                        loadLevels(); // Refresh to show selection
+                    }
+                };
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Load lessons into modal
+        function loadLessons() {
+            const lessons = JSON.parse(localStorage.getItem('customLessons')) || { ...defaultLessons };
+            const grid = document.getElementById('lessonsGrid');
+            grid.innerHTML = '';
+            
+            const currentLevelLessons = lessons[currentLevel] || {};
+            
+            Object.keys(currentLevelLessons).forEach(lessonKey => {
+                const card = document.createElement('div');
+                card.className = 'lesson-card';
+                if (lessonKey === currentLesson || parseInt(lessonKey) === currentLesson) {
+                    card.classList.add('active');
+                }
+                if (lessonKey === selectedLesson) {
+                    card.style.border = '3px solid #FF9800';
+                    card.style.backgroundColor = '#FFF3E0';
+                }
+                
+                // Check if it's a custom lesson
+                const isCustom = !defaultLessons[currentLevel] || !defaultLessons[currentLevel][lessonKey];
+                const lessonText = currentLevelLessons[lessonKey];
+                const preview = lessonText.length > 30 ? lessonText.substring(0, 30) + '...' : lessonText;
+                
+                card.innerHTML = `
+                    <h4>Lesson ${lessonKey} ${isCustom ? '(Custom)' : ''}</h4>
+                    <p style="font-size: 12px; color: #666;">${preview}</p>
+                `;
+                
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    
+                    // Double-click to load lesson
+                    if (e.detail === 2) {
+                        currentLesson = lessonKey; // Keep as string for Y.T Course compatibility
+                        loadLesson();
+                        closeLessonsModal();
+                    } else {
+                        // Single click to select
+                        selectedLesson = lessonKey;
+                        loadLessons(); // Refresh to show selection
+                    }
+                };
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Custom level/lesson functions
+        let selectedLevel = null;
+        let selectedLesson = null;
+        
+        function addCustomLevel() {
+            const name = prompt('Enter level name:');
+            const description = prompt('Enter level description:');
+            
+            if (name && description) {
+                const levels = JSON.parse(localStorage.getItem('customLevels')) || { ...defaultLevels };
+                const key = name.toLowerCase().replace(/\s+/g, '_');
+                levels[key] = { name, description };
+                localStorage.setItem('customLevels', JSON.stringify(levels));
+                loadLevels();
+                alert('Level added successfully!');
+            }
+        }
+        
+        function addCustomLesson() {
+            const text = prompt('Enter lesson text:');
+            
+            if (text) {
+                const lessons = JSON.parse(localStorage.getItem('customLessons')) || { ...defaultLessons };
+                if (!lessons[currentLevel]) {
+                    lessons[currentLevel] = {};
+                }
+                
+                const lessonNumber = Object.keys(lessons[currentLevel]).length + 1;
+                lessons[currentLevel][lessonNumber] = text;
+                localStorage.setItem('customLessons', JSON.stringify(lessons));
+                loadLessons();
+                alert('Lesson added successfully!');
+            }
+        }
+        
+        function editLevel() {
+            if (!selectedLevel) {
+                alert('Please select a level first by clicking on it!');
+                return;
+            }
+            
+            const levels = JSON.parse(localStorage.getItem('customLevels')) || { ...defaultLevels };
+            const level = levels[selectedLevel];
+            
+            if (!level) {
+                alert('Level not found!');
+                return;
+            }
+            
+            const newName = prompt('Enter new level name:', level.name);
+            const newDescription = prompt('Enter new level description:', level.description);
+            
+            if (newName && newDescription) {
+                levels[selectedLevel] = { name: newName, description: newDescription };
+                localStorage.setItem('customLevels', JSON.stringify(levels));
+                loadLevels();
+                alert('Level updated successfully!');
+            }
+        }
+        
+        function editLesson() {
+            if (!selectedLesson) {
+                alert('Please select a lesson first by clicking on it!');
+                return;
+            }
+            
+            const lessons = JSON.parse(localStorage.getItem('customLessons')) || { ...defaultLessons };
+            const currentLevelLessons = lessons[currentLevel] || {};
+            const lessonText = currentLevelLessons[selectedLesson];
+            
+            if (!lessonText) {
+                alert('Lesson not found!');
+                return;
+            }
+            
+            const newText = prompt('Enter new lesson text:', lessonText);
+            
+            if (newText) {
+                lessons[currentLevel][selectedLesson] = newText;
+                localStorage.setItem('customLessons', JSON.stringify(lessons));
+                loadLessons();
+                alert('Lesson updated successfully!');
+            }
+        }
+        
+        function deleteLevel() {
+            if (!selectedLevel) {
+                alert('Please select a level first by clicking on it!');
+                return;
+            }
+            
+            // Don't allow deletion of default levels
+            if (defaultLevels[selectedLevel]) {
+                alert('Cannot delete default levels! You can only delete custom levels.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete the level "${selectedLevel}"?`)) {
+                const levels = JSON.parse(localStorage.getItem('customLevels')) || { ...defaultLevels };
+                delete levels[selectedLevel];
+                localStorage.setItem('customLevels', JSON.stringify(levels));
+                
+                // If current level was deleted, switch to introduction
+                if (currentLevel === selectedLevel) {
+                    currentLevel = 'introduction';
+                    currentLesson = 1;
+                    loadLesson();
+                }
+                
+                selectedLevel = null;
+                loadLevels();
+                alert('Level deleted successfully!');
+            }
+        }
+        
+        function deleteLesson() {
+            if (!selectedLesson) {
+                alert('Please select a lesson first by clicking on it!');
+                return;
+            }
+            
+            const lessons = JSON.parse(localStorage.getItem('customLessons')) || { ...defaultLessons };
+            const currentLevelLessons = lessons[currentLevel] || {};
+            
+            // Don't allow deletion if it's the only lesson
+            if (Object.keys(currentLevelLessons).length <= 1) {
+                alert('Cannot delete the only lesson in a level!');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete lesson ${selectedLesson}?`)) {
+                delete lessons[currentLevel][selectedLesson];
+                
+                // Reorganize lesson numbers
+                const remainingLessons = Object.keys(lessons[currentLevel]).sort((a, b) => parseInt(a) - parseInt(b));
+                const newLessons = {};
+                remainingLessons.forEach((key, index) => {
+                    newLessons[index + 1] = lessons[currentLevel][key];
+                });
+                lessons[currentLevel] = newLessons;
+                
+                localStorage.setItem('customLessons', JSON.stringify(lessons));
+                
+                // If current lesson was deleted, switch to lesson 1
+                if (currentLesson === selectedLesson || currentLesson === parseInt(selectedLesson)) {
+                    currentLesson = 1;
+                    loadLesson();
+                }
+                
+                selectedLesson = null;
+                loadLessons();
+                alert('Lesson deleted successfully!');
+            }
+        }
+        
+        function resetLevels() {
+            if (confirm('Reset all levels to default? This will remove all custom levels!')) {
+                localStorage.removeItem('customLevels');
+                selectedLevel = null;
+                
+                // Reset to default level if current level was custom
+                if (!defaultLevels[currentLevel]) {
+                    currentLevel = 'introduction';
+                    currentLesson = 1;
+                    loadLesson();
+                }
+                
+                loadLevels();
+                alert('All levels reset to default!');
+            }
+        }
+        
+        function resetLessons() {
+            if (confirm('Reset all lessons to default? This will remove all custom lessons!')) {
+                localStorage.removeItem('customLessons');
+                selectedLesson = null;
+                currentLesson = 1;
+                loadLesson();
+                loadLessons();
+                alert('All lessons reset to default!');
+            }
+        }
+        
+        // Lesson control functions
+        function restartLesson() {
+            loadLesson();
+        }
+        
+        function nextLesson() {
+            const lessons = JSON.parse(localStorage.getItem('customLessons')) || defaultLessons;
+            const currentLevelLessons = lessons[currentLevel] || {};
+            const lessonKeys = Object.keys(currentLevelLessons);
+            
+            // Find current lesson index
+            let currentIndex = lessonKeys.indexOf(currentLesson.toString());
+            if (currentIndex === -1) {
+                currentIndex = lessonKeys.indexOf(currentLesson);
+            }
+            
+            if (currentIndex < lessonKeys.length - 1) {
+                currentLesson = lessonKeys[currentIndex + 1];
+                loadLesson();
+            } else {
+                alert('You have completed all lessons in this level!');
+            }
+        }
+        
+        // Show statistics
+        function showStats() {
+            const stats = JSON.parse(localStorage.getItem('lessonStats')) || {};
+            const key = `${currentLevel}-${currentLesson}`;
+            const lessonStats = stats[key];
+            
+            if (lessonStats) {
+                alert(`Lesson Statistics:
+                Accuracy: ${lessonStats.accuracy}%
+                Speed: ${lessonStats.wpm} WPM
+                Errors: ${lessonStats.errors}
+                Time: ${Math.floor(lessonStats.time / 60)}:${Math.floor(lessonStats.time % 60).toString().padStart(2, '0')}
+                Date: ${new Date(lessonStats.date).toLocaleDateString()}`);
+            } else {
+                alert('No statistics available for this lesson yet.');
+            }
+        }
+        
+        // Handle body clicks to close settings
+        function handleBodyClick(event) {
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsBtn = document.querySelector('.settings-btn');
+            
+            if (!settingsPanel.contains(event.target) && !settingsBtn.contains(event.target)) {
+                settingsPanel.classList.remove('open');
+            }
+        }
+        
+        // Fullscreen functionality - Auto fullscreen with Escape exit allowed
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        }
+        
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {
+                    console.log('Fullscreen request failed:', err);
+                });
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+        
+        function exitFullscreen() {
+            // Allow manual exit via Escape key or fullscreen button
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        // Function to handle fullscreen change events
+        function handleFullscreenChange() {
+            // Only auto re-enter if page becomes visible (not manual exit)
+            if (!document.fullscreenElement &&
+                !document.webkitFullscreenElement &&
+                !document.msFullscreenElement &&
+                !document.hidden) {
+                // Small delay to distinguish between manual exit and system exit
+                setTimeout(() => {
+                    if (!document.fullscreenElement && !document.hidden) {
+                        enterFullscreen();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Initialize the application when the page loads
+        window.addEventListener('load', init);
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            const overlay = document.getElementById('fullscreenOverlay');
+            
+            function startApp() {
+                overlay.style.display = 'none';
+                enterFullscreen();
+            }
+            overlay.addEventListener('click', startApp);
+            overlay.addEventListener('touchstart', startApp);
+        });
+        
+        // Voice Assistant Feature (English + Hindi)
+let recognition;
+let recognizing = false;
+
+function initVoiceAssistant() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        document.getElementById('voiceBtn').disabled = true;
+        document.getElementById('voiceBtn').textContent = '🎤 N/A';
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US'; // Hindi: 'hi-IN' for only Hindi
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function() {
+        recognizing = true;
+        document.getElementById('voiceBtn').textContent = '🎤 Listening...';
+    };
+    recognition.onend = function() {
+        recognizing = false;
+        document.getElementById('voiceBtn').textContent = '🎤 Voice';
+    };
+    recognition.onerror = function(e) {
+        recognizing = false;
+        document.getElementById('voiceBtn').textContent = '🎤 Voice';
+        alert('Voice error: ' + e.error);
+    };
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim().toLowerCase();
+        handleVoiceCommand(transcript);
+    };
+}
+
+function handleVoiceCommand(cmd) {
+    // Lesson/Panel Controls
+    if (cmd.includes('next lesson') || cmd.includes('अगला लेसन')) nextLesson();
+    else if (cmd.includes('restart') || cmd.includes('फिर से शुरू')) restartLesson();
+    else if (cmd.includes('open settings') || cmd.includes('सेटिंग्स खोलो')) toggleSettings();
+    else if (cmd.includes('close settings') || cmd.includes('सेटिंग्स बंद')) closeSettings();
+    else if (cmd.includes('open levels') || cmd.includes('लेवल खोलो')) openLevelsModal();
+    else if (cmd.includes('close levels') || cmd.includes('लेवल बंद')) closeLevelsModal();
+    else if (cmd.includes('open lessons') || cmd.includes('पाठ खोलो')) openLessonsModal();
+    else if (cmd.includes('close lessons') || cmd.includes('पाठ बंद')) closeLessonsModal();
+    else if (cmd.includes('reset settings') || cmd.includes('सेटिंग्स रीसेट')) resetAllSettings();
+    else if (cmd.includes('show stats') || cmd.includes('statistics') || cmd.includes('stat')) showStats();
+
+    // Fullscreen Controls
+    else if (cmd.includes('fullscreen') || cmd.includes('फुल स्क्रीन')) enterFullscreen();
+    else if (cmd.includes('exit fullscreen') || cmd.includes('फुल स्क्रीन बंद')) exitFullscreen();
+
+    // Keyboard Theme Change
+    else if (cmd.includes('keyboard theme') || cmd.includes('कीबोर्ड थीम')) {
+        if (cmd.includes('gaming') || cmd.includes('गेमिंग')) {
+            document.getElementById('keyboardThemeSelect').value = 'gaming';
+            changeKeyboardTheme();
+        } else if (cmd.includes('retro') || cmd.includes('रेट्रो')) {
+            document.getElementById('keyboardThemeSelect').value = 'retro';
+            changeKeyboardTheme();
+        } else if (cmd.includes('neon') || cmd.includes('नियॉन')) {
+            document.getElementById('keyboardThemeSelect').value = 'neon';
+            changeKeyboardTheme();
+        } else if (cmd.includes('default') || cmd.includes('डिफॉल्ट')) {
+            document.getElementById('keyboardThemeSelect').value = 'default';
+            changeKeyboardTheme();
+        } else {
+            alert('Please say: change keyboard theme to gaming/retro/neon/default');
+        }
+    }
+
+    // Keyboard Show/Hide
+    else if (cmd.includes('hide keyboard') || cmd.includes('कीबोर्ड छुपाओ')) {
+        document.getElementById('keyboardVisibilitySelect').value = 'hide';
+        toggleKeyboardVisibility();
+    }
+    else if (cmd.includes('show keyboard') || cmd.includes('कीबोर्ड दिखाओ')) {
+        document.getElementById('keyboardVisibilitySelect').value = 'show';
+        toggleKeyboardVisibility();
+    }
+
+    // Zoom Controls
+    else if (cmd.includes('zoom in') || cmd.includes('ज़ूम इन')) {
+        updateZoomLevel(currentZoomLevel + 10);
+    }
+    else if (cmd.includes('zoom out') || cmd.includes('ज़ूम आउट')) {
+        updateZoomLevel(currentZoomLevel - 10);
+    }
+    else if (cmd.includes('reset zoom') || cmd.includes('ज़ूम रीसेट')) {
+        updateZoomLevel(130);
+    }
+
+    // Voice Typing
+    else if (cmd.startsWith('type ')) {
+        const text = cmd.replace('type ', '');
+        for (let ch of text) processTypedCharacter(ch);
+    }
+    else if (cmd.startsWith('टाइप ')) {
+        const text = cmd.replace('टाइप ', '');
+        for (let ch of text) processTypedCharacter(ch);
+    }
+
+    // Color Change (example: "change keyboard color to red")
+    else if (cmd.includes('keyboard color') || cmd.includes('कीबोर्ड रंग')) {
+        let color = '';
+        if (cmd.includes('red') || cmd.includes('लाल')) color = '#ff0000';
+        else if (cmd.includes('blue') || cmd.includes('नीला')) color = '#0000ff';
+        else if (cmd.includes('green') || cmd.includes('हरा')) color = '#00ff00';
+        else if (cmd.includes('yellow') || cmd.includes('पीला')) color = '#ffff00';
+        else if (cmd.includes('black') || cmd.includes('काला')) color = '#000000';
+        else if (cmd.includes('white') || cmd.includes('सफेद')) color = '#ffffff';
+        if (color) {
+            document.getElementById('keyboardTextColorPicker').value = color;
+            changeKeyboardTextColor();
+        } else {
+            alert('Please say: change keyboard color to red/blue/green/yellow/black/white');
+        }
+    }
+
+    // Fallback
+    else {
+        alert('Voice command not recognized: ' + cmd);
+    }
+}
+
+// Voice button event
+document.addEventListener('DOMContentLoaded', function() {
+    initVoiceAssistant();
+    document.getElementById('voiceBtn').onclick = function() {
+        if (recognizing) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    };
+});
+        
+    </script>
+    
+    <!-- Fullscreen Overlay for User Interaction -->
+    <div id="fullscreenOverlay" style="
+    position:fixed;top:0;left:0;width:100vw;height:100vh;
+    background:rgba(0,0,0,0.9);color:white;z-index:99999;
+    display:flex;align-items:center;justify-content:center;
+    font-size:2em;flex-direction:column;">
+        <div>🔠 Typing Tutor</div>
+        <div style="margin-top:20px;">Tap or click to start in fullscreen</div>
+    </div>
+    
+</body>
+
+</html>
