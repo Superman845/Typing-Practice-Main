@@ -560,6 +560,8 @@
             background: var(--panel-bg);
             padding: 20px;
             border-radius: 10px;
+            max-width: 80%;
+            max-height: 80%;
             overflow-y: auto;
             border: 2px solid var(--border-color);
         }
@@ -664,6 +666,7 @@
         
         .settings-panel,
         .modal-content {
+            max-height: 90vh !important;
             overflow-y: auto !important;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
@@ -705,6 +708,94 @@
     touch-action: auto !important;
 }*/
         
+        /* Keyboard key color customization */
+.key.custom-color {
+    background: var(--custom-key-bg, var(--key-bg)) !important;
+    color: var(--custom-key-text, var(--keyboard-text-color)) !important;
+    border-color: var(--custom-key-border, var(--key-border)) !important;
+}
+
+/* Enhanced scrollable panels */
+.settings-panel,
+.modal-content {
+    max-height: 95vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--panel-bg);
+}
+
+.settings-panel::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-panel::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+    background: var(--panel-bg);
+}
+
+.settings-panel::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.settings-panel::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Device mode styles */
+.device-mode-mobile {
+    max-width: 480px !important;
+    margin: 0 auto !important;
+    padding: 10px !important;
+}
+
+.device-mode-mobile .keyboard {
+    transform: scale(0.8) !important;
+    transform-origin: center !important;
+}
+
+.device-mode-mobile .text-display {
+    font-size: 24px !important;
+}
+
+.device-mode-mobile .key {
+    min-width: 25px !important;
+    height: 25px !important;
+    font-size: 10px !important;
+}
+
+.device-mode-tablet {
+    max-width: 768px !important;
+    margin: 0 auto !important;
+    padding: 15px !important;
+}
+
+.device-mode-tablet .keyboard {
+    transform: scale(0.9) !important;
+    transform-origin: center !important;
+}
+
+.device-mode-tablet .text-display {
+    font-size: 30px !important;
+}
+
+.device-mode-desktop {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+}
+
+.device-mode-desktop .keyboard {
+    transform: scale(1) !important;
+    transform-origin: center !important;
+}
+        
         /* Responsive design */
         @media (max-width: 768px) {
             .container {
@@ -741,6 +832,8 @@
             }
             
             .modal-content {
+                max-width: 95%;
+                max-height: 95%;
                 transform: scale(1) !important;
                 /* Force normal scale */
                 zoom: 100% !important;
@@ -750,6 +843,40 @@
             .keyboard.hidden {
                 display: none !important;
             }
+            
+            .settings-panel {
+        width: 100vw !important;
+        right: -100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+    
+    .settings-panel.open {
+        right: 0 !important;
+    }
+    
+    .modal-content {
+        width: 95vw !important;
+        height: 90vh !important;
+        max-width: 95vw !important;
+        max-height: 90vh !important;
+        margin: 5vh auto !important;
+    }
+    
+    .levels-grid,
+    .lessons-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+        gap: 8px !important;
+    }
+    
+    .level-card,
+    .lesson-card {
+        padding: 8px !important;
+        font-size: 12px !important;
+    }
+}
             
             /* Zoom indicator */
             .zoom-indicator {
@@ -785,6 +912,8 @@
             /* Panel scrollable (up-down, left-right) */
             .settings-panel,
             .modal.open .modal-content {
+                max-height: 90vh !important;
+                max-width: 98vw !important;
                 overflow: auto !important;
                 overscroll-behavior: contain;
                 -webkit-overflow-scrolling: touch;
@@ -794,23 +923,20 @@
                 color: var(--keyboard-text-color, #000) !important;
             }
             
-.settings-panel,
+            .settings-panel,
 .modal.open .modal-content {
-    position: fixed !important;
-    top: 0;
-    left: 0;
+    height: 100% !important;
     width: 100vw !important;
-    height: 100vh !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
+    max-height: none !important;
+    max-width: none !important;
     overflow: auto !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: auto !important;
-    z-index: 10000 !important;
     box-sizing: border-box;
-    background: var(--panel-bg);
 }
+            
+        }
         
         }
     </style>
@@ -823,8 +949,6 @@
                 <button class="level-btn active" onclick="openLevelsModal()">Levels</button>
                 <button class="lesson-btn" onclick="openLessonsModal()">Lessons</button>
                 <button class="control-btn" onclick="showStats()">Stats</button>
-                <button id="voiceBtn" style="margin-left:10px;">🎤 Voice</button>
-               <button id="voiceHelpBtn" title="Voice Commands" style="margin-left:5px; font-size:20px; background:none; border:none; cursor:pointer;">❓</button>
             </div>
             <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
         </div>
@@ -848,41 +972,6 @@
             </div>
         </div>
         
-         <div class="modal" id="voiceHelpModal">
-    <div class="modal-content" style="max-width:400px;">
-        <div class="modal-header">
-            <h3>Voice Commands</h3>
-            <button class="close-btn" onclick="closeVoiceHelpModal()">×</button>
-        </div>
-        <div style="max-height:60vh;overflow:auto;">
-            <ul style="font-size:15px;line-height:1.7;">
-                <li><b>Next lesson</b> / <b>अगला लेसन</b></li>
-                <li><b>Restart</b> / <b>फिर से शुरू</b></li>
-                <li><b>Open settings</b> / <b>सेटिंग्स खोलो</b></li>
-                <li><b>Close settings</b> / <b>सेटिंग्स बंद</b></li>
-                <li><b>Open levels</b> / <b>लेवल खोलो</b></li>
-                <li><b>Close levels</b> / <b>लेवल बंद</b></li>
-                <li><b>Open lessons</b> / <b>पाठ खोलो</b></li>
-                <li><b>Close lessons</b> / <b>पाठ बंद</b></li>
-                <li><b>Reset settings</b> / <b>सेटिंग्स रीसेट</b></li>
-                <li><b>Show stats</b> / <b>Statistics</b> / <b>Stat</b></li>
-                <li><b>Fullscreen</b> / <b>फुल स्क्रीन</b></li>
-                <li><b>Exit fullscreen</b> / <b>फुल स्क्रीन बंद</b></li>
-                <li><b>Change keyboard theme to gaming/retro/neon/default</b><br>
-                    <b>कीबोर्ड थीम गेमिंग/रेट्रो/नियॉन/डिफॉल्ट</b></li>
-                <li><b>Hide keyboard</b> / <b>कीबोर्ड छुपाओ</b></li>
-                <li><b>Show keyboard</b> / <b>कीबोर्ड दिखाओ</b></li>
-                <li><b>Zoom in</b> / <b>ज़ूम इन</b></li>
-                <li><b>Zoom out</b> / <b>ज़ूम आउट</b></li>
-                <li><b>Reset zoom</b> / <b>ज़ूम रीसेट</b></li>
-                <li><b>Type hello world</b> / <b>टाइप नमस्ते दुनिया</b></li>
-                <li><b>Change keyboard color to red/blue/green/yellow/black/white</b><br>
-                    <b>कीबोर्ड रंग लाल/नीला/हरा/पीला/काला/सफेद</b></li>
-            </ul>
-        </div>
-    </div>
-</div>
-        
         <div class="typing-area">
             <div class="text-display" id="textDisplay"></div>
             <div class="finger-hint" id="fingerHint">Position your fingers on the home row</div>
@@ -896,88 +985,107 @@
         <div class="keyboard touch-typing-enabled" id="keyboard"></div>
     </div>
     
-    <!-- Settings Panel -->
-    <div class="settings-panel" id="settingsPanel">
-        <div class="settings-header">
-            <h3>Settings</h3>
-            <button class="close-btn" onclick="closeSettings()">❌</button>
-        </div>
-        
-        
-        <div class="setting-group">
-            <label class="setting-label">Theme</label>
-            <select class="setting-select" id="themeSelect" onchange="changeTheme()">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="night" selected>Night</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-            </select>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Font Size</label>
-            <input type="range" class="setting-input" id="fontSizeSlider" min="12" max="40" value="35" oninput="changeFontSize()">
-            <span id="fontSizeValue">35px</span>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Zoom Level</label>
-            <input type="range" class="setting-input" id="zoomSlider" min="50" max="200" value="130" oninput="changeZoom()">
-            <span id="zoomValue">130%</span>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Keyboard Size</label>
-            <input type="range" class="setting-input" id="keyboardSizeSlider" min="0.5" max="2" step="0.1" value="1" oninput="changeKeyboardSize()">
-            <span id="keyboardSizeValue">100%</span>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Mistake Sound</label>
-            <select class="setting-select" id="soundSelect" onchange="changeMistakeSound()">
-                <option value="sound1">Sound 1</option>
-                <option value="sound2">Sound 2</option>
-                <option value="sound3">Sound 3</option>
-            </select>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Text Box Rows</label>
-            <input type="range" class="setting-input" id="textBoxRowsSlider" min="1" max="5" value="1" oninput="changeTextBoxRows()">
-            <span id="textBoxRowsValue">1 rows</span>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Keyboard Theme</label>
-            <select class="setting-select" id="keyboardThemeSelect" onchange="changeKeyboardTheme()">
-                <option value="default">Default</option>
-                <option value="gaming">Gaming</option>
-                <option value="retro">Retro</option>
-                <option value="neon">Neon</option>
-            </select>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Keyboard Text Color</label>
-            <input type="color" class="setting-input" id="keyboardTextColorPicker" value="#000000" onchange="changeKeyboardTextColor()">
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Show Keyboard</label>
-            <select class="setting-select" id="keyboardVisibilitySelect" onchange="toggleKeyboardVisibility()">
-                <option value="show" selected>Show</option>
-                <option value="hide">Hide</option>
-            </select>
-        </div>
-        
-        <div class="setting-group">
-            <label class="setting-label">Reset Settings</label>
-            <button class="control-btn" onclick="resetAllSettings()" style="width: 100%; background: var(--error-color); color: white;">
-                🔄 Reset All Settings to Default
-            </button>
-        </div>
+   <!-- Settings Panel -->
+<div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+        <h3>Settings</h3>
+        <button class="close-btn" onclick="closeSettings()">❌</button>
     </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Device Mode</label>
+        <select class="setting-select" id="deviceModeSelect" onchange="changeDeviceMode()">
+            <option value="auto">Auto Detect</option>
+            <option value="mobile">Mobile Mode</option>
+            <option value="tablet">Tablet Mode</option>
+            <option value="desktop">Desktop Mode</option>
+        </select>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Theme</label>
+        <select class="setting-select" id="themeSelect" onchange="changeTheme()">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="night" selected>Night</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Font Size</label>
+        <input type="range" class="setting-input" id="fontSizeSlider" min="12" max="40" value="35" oninput="changeFontSize()">
+        <span id="fontSizeValue">35px</span>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Zoom Level</label>
+        <input type="range" class="setting-input" id="zoomSlider" min="50" max="200" value="130" oninput="changeZoom()">
+        <span id="zoomValue">130%</span>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Keyboard Size</label>
+        <input type="range" class="setting-input" id="keyboardSizeSlider" min="0.5" max="2" step="0.1" value="1" oninput="changeKeyboardSize()">
+        <span id="keyboardSizeValue">100%</span>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Keyboard Background Color</label>
+        <input type="color" class="setting-input" id="keyboardBgColorPicker" value="#f0f0f0" onchange="changeKeyboardBgColor()">
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Keyboard Text Color</label>
+        <input type="color" class="setting-input" id="keyboardTextColorPicker" value="#000000" onchange="changeKeyboardTextColor()">
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Keyboard Border Color</label>
+        <input type="color" class="setting-input" id="keyboardBorderColorPicker" value="#cccccc" onchange="changeKeyboardBorderColor()">
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Mistake Sound</label>
+        <select class="setting-select" id="soundSelect" onchange="changeMistakeSound()">
+            <option value="sound1">Sound 1</option>
+            <option value="sound2">Sound 2</option>
+            <option value="sound3">Sound 3</option>
+        </select>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Text Box Rows</label>
+        <input type="range" class="setting-input" id="textBoxRowsSlider" min="1" max="5" value="1" oninput="changeTextBoxRows()">
+        <span id="textBoxRowsValue">1 rows</span>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Keyboard Theme</label>
+        <select class="setting-select" id="keyboardThemeSelect" onchange="changeKeyboardTheme()">
+            <option value="default">Default</option>
+            <option value="gaming">Gaming</option>
+            <option value="retro">Retro</option>
+            <option value="neon">Neon</option>
+        </select>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Show Keyboard</label>
+        <select class="setting-select" id="keyboardVisibilitySelect" onchange="toggleKeyboardVisibility()">
+            <option value="show" selected>Show</option>
+            <option value="hide">Hide</option>
+        </select>
+    </div>
+    
+    <div class="setting-group">
+        <label class="setting-label">Reset Settings</label>
+        <button class="control-btn" onclick="resetAllSettings()" style="width: 100%; background: var(--error-color); color: white;">
+            🔄 Reset All Settings to Default
+        </button>
+    </div>
+</div>
     
     <!-- Levels Modal -->
     <div class="modal" id="levelsModal">
@@ -1411,6 +1519,7 @@
         function init() {
             loadSettings();
             createKeyboard();
+            makeFullyScrollable();
             loadLevels();
             loadLessons();
             generateMistakeSounds();
@@ -1422,6 +1531,10 @@
             enableKeyboardClicks();
             
             loadLesson();
+            
+            // Always close settings panel on load
+    document.getElementById('settingsPanel').classList.remove('open');
+    document.body.classList.remove('panel-open');
             
             // Add event listeners
             document.addEventListener('keydown', handleKeyDown);
@@ -2260,114 +2373,150 @@
         }
         
         function resetAllSettings() {
-            if (confirm('Are you sure you want to reset all settings to default values? This will clear all your customizations!')) {
-                // Clear all localStorage settings
-                localStorage.removeItem('theme');
-                localStorage.removeItem('fontSize');
-                localStorage.removeItem('zoom');
-                localStorage.removeItem('keyboardSize');
-                localStorage.removeItem('mistakeSound');
-                localStorage.removeItem('textBoxRows');
-                localStorage.removeItem('keyboardTheme');
-                localStorage.removeItem('touchTypingEnabled');
-                localStorage.removeItem('keyboardVisibility');
-                
-                // Reset to default values
-                document.body.setAttribute('data-theme', 'night');
-                document.getElementById('themeSelect').value = 'night';
-                
-                document.getElementById('fontSizeSlider').value = '35';
-                document.getElementById('fontSizeValue').textContent = '35px';
-                document.getElementById('textDisplay').style.fontSize = '35px';
-                
-                updateZoomLevel(130); // ← यहाँ बदलाव
-                
-                document.getElementById('keyboardSizeSlider').value = '1';
-                document.getElementById('keyboardSizeValue').textContent = '100%';
-                document.getElementById('keyboard').style.transform = 'scale(1)';
-                
-                document.getElementById('soundSelect').value = 'sound1';
-                currentMistakeSound = 'sound1';
-                
-                document.getElementById('textBoxRowsSlider').value = '1';
-                document.getElementById('textBoxRowsValue').textContent = '1 rows';
-                document.getElementById('textDisplay').style.minHeight = '30px';
-                
-                document.getElementById('keyboardThemeSelect').value = 'default';
-                const keyboard = document.getElementById('keyboard');
-                keyboard.classList.remove('gaming', 'retro', 'neon');
-                
-                document.getElementById('keyboardVisibilitySelect').value = 'show';
-                keyboard.classList.remove('hidden');
-                
-                touchTypingEnabled = true;
-                keyboard.classList.add('touch-typing-enabled');
-                enableKeyboardClicks();
-                
-                touchTypingEnabled = true;
-                keyboard.classList.add('touch-typing-enabled');
-                enableKeyboardClicks();
-                
-                alert('All settings have been reset to default values!');
-            }
-        }
+    if (confirm('Are you sure you want to reset all settings to default values? This will clear all your customizations!')) {
+        // Clear all localStorage settings
+        localStorage.removeItem('theme');
+        localStorage.removeItem('fontSize');
+        localStorage.removeItem('zoom');
+        localStorage.removeItem('keyboardSize');
+        localStorage.removeItem('mistakeSound');
+        localStorage.removeItem('textBoxRows');
+        localStorage.removeItem('keyboardTheme');
+        localStorage.removeItem('touchTypingEnabled');
+        localStorage.removeItem('keyboardVisibility');
+        localStorage.removeItem('keyboardTextColor');
+        localStorage.removeItem('keyboardBgColor');
+        localStorage.removeItem('keyboardBorderColor');
+        localStorage.removeItem('deviceMode');
         
-        // Load settings from localStorage
+        // Reset to default values
+        document.body.setAttribute('data-theme', 'night');
+        document.getElementById('themeSelect').value = 'night';
+        
+        document.getElementById('fontSizeSlider').value = '35';
+        document.getElementById('fontSizeValue').textContent = '35px';
+        document.getElementById('textDisplay').style.fontSize = '35px';
+        
+        updateZoomLevel(130);
+        
+        document.getElementById('keyboardSizeSlider').value = '1';
+        document.getElementById('keyboardSizeValue').textContent = '100%';
+        document.getElementById('keyboard').style.transform = 'scale(1)';
+        
+        // Reset keyboard colors
+        document.getElementById('keyboardTextColorPicker').value = '#000000';
+        document.getElementById('keyboardBgColorPicker').value = '#f0f0f0';
+        document.getElementById('keyboardBorderColorPicker').value = '#cccccc';
+        document.documentElement.style.setProperty('--keyboard-text-color', '#000000');
+        document.documentElement.style.setProperty('--custom-key-bg', '#f0f0f0');
+        document.documentElement.style.setProperty('--custom-key-border', '#cccccc');
+        
+        // Reset device mode
+        document.getElementById('deviceModeSelect').value = 'auto';
+        const container = document.querySelector('.container');
+        container.classList.remove('device-mode-mobile', 'device-mode-tablet', 'device-mode-desktop');
+        changeDeviceMode();
+        
+        document.getElementById('soundSelect').value = 'sound1';
+        currentMistakeSound = 'sound1';
+        
+        document.getElementById('textBoxRowsSlider').value = '1';
+        document.getElementById('textBoxRowsValue').textContent = '1 rows';
+        document.getElementById('textDisplay').style.minHeight = '30px';
+        
+        document.getElementById('keyboardThemeSelect').value = 'default';
+        const keyboard = document.getElementById('keyboard');
+        keyboard.classList.remove('gaming', 'retro', 'neon');
+        
+        document.getElementById('keyboardVisibilitySelect').value = 'show';
+        keyboard.classList.remove('hidden');
+        
+        touchTypingEnabled = true;
+        keyboard.classList.add('touch-typing-enabled');
+        enableKeyboardClicks();
+        
+        // Apply default colors
+        setTimeout(() => {
+            applyCustomKeyboardColors();
+        }, 100);
+        
+        alert('All settings have been reset to default values!');
+    }
+}
+        
         function loadSettings() {
-            const theme = localStorage.getItem('theme') || 'night';
-            const fontSize = localStorage.getItem('fontSize') || '35';
-            const zoom = localStorage.getItem('zoom') || '130';
-            const keyboardTextColor = localStorage.getItem('keyboardTextColor') || '#000000';
-            const keyboardSize = localStorage.getItem('keyboardSize') || '1';
-            const mistakeSound = localStorage.getItem('mistakeSound') || 'sound1';
-            const textBoxRows = localStorage.getItem('textBoxRows') || '1';
-            const keyboardTheme = localStorage.getItem('keyboardTheme') || 'default';
-            const touchTyping = localStorage.getItem('touchTypingEnabled') !== null ?
-                localStorage.getItem('touchTypingEnabled') === 'true' : true; // Default to true
-            
-            document.body.setAttribute('data-theme', theme);
-            document.getElementById('themeSelect').value = theme;
-            
-            document.getElementById('fontSizeSlider').value = fontSize;
-            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
-            document.getElementById('textDisplay').style.fontSize = fontSize + 'px';
-            
-            document.getElementById('zoomSlider').value = zoom;
-            document.getElementById('zoomValue').textContent = zoom + '%';
-            document.body.style.zoom = zoom + '%';
-            
-            document.getElementById('keyboardTextColorPicker').value = keyboardTextColor;
-            document.documentElement.style.setProperty('--keyboard-text-color', keyboardTextColor);
-            document.querySelectorAll('.key').forEach(key => {
-                key.style.color = keyboardTextColor;
-            });
-            
-            document.getElementById('keyboardSizeSlider').value = keyboardSize;
-            document.getElementById('keyboardSizeValue').textContent = Math.round(keyboardSize * 100) + '%';
-            document.getElementById('keyboard').style.transform = `scale(${keyboardSize})`;
-            
-            document.getElementById('soundSelect').value = mistakeSound;
-            currentMistakeSound = mistakeSound;
-            
-            // Load zoom level
-            currentZoomLevel = parseInt(zoom);
-            
-            document.getElementById('textBoxRowsSlider').value = textBoxRows;
-            document.getElementById('textBoxRowsValue').textContent = textBoxRows + ' rows';
-            document.getElementById('textDisplay').style.minHeight = (textBoxRows * 30) + 'px';
-            
-            document.getElementById('keyboardThemeSelect').value = keyboardTheme;
-            const keyboard = document.getElementById('keyboard');
-            keyboard.classList.remove('gaming', 'retro', 'neon');
-            if (keyboardTheme !== 'default') {
-                keyboard.classList.add(keyboardTheme);
-            }
-            
-            // Touch typing is always enabled
-            touchTypingEnabled = true;
-            keyboard.classList.add('touch-typing-enabled');
-            enableKeyboardClicks();
-        }
+    const theme = localStorage.getItem('theme') || 'night';
+    const fontSize = localStorage.getItem('fontSize') || '35';
+    const zoom = localStorage.getItem('zoom') || '130';
+    const keyboardTextColor = localStorage.getItem('keyboardTextColor') || '#000000';
+    const keyboardBgColor = localStorage.getItem('keyboardBgColor') || '#f0f0f0';
+    const keyboardBorderColor = localStorage.getItem('keyboardBorderColor') || '#cccccc';
+    const keyboardSize = localStorage.getItem('keyboardSize') || '1';
+    const mistakeSound = localStorage.getItem('mistakeSound') || 'sound1';
+    const textBoxRows = localStorage.getItem('textBoxRows') || '1';
+    const keyboardTheme = localStorage.getItem('keyboardTheme') || 'default';
+    const deviceMode = localStorage.getItem('deviceMode') || 'auto';
+    const touchTyping = localStorage.getItem('touchTypingEnabled') !== null ?
+        localStorage.getItem('touchTypingEnabled') === 'true' : true;
+
+    document.body.setAttribute('data-theme', theme);
+    document.getElementById('themeSelect').value = theme;
+    
+    document.getElementById('fontSizeSlider').value = fontSize;
+    document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+    document.getElementById('textDisplay').style.fontSize = fontSize + 'px';
+    
+    document.getElementById('zoomSlider').value = zoom;
+    document.getElementById('zoomValue').textContent = zoom + '%';
+    document.body.style.zoom = zoom + '%';
+    
+    // Load keyboard colors
+    document.getElementById('keyboardTextColorPicker').value = keyboardTextColor;
+    document.getElementById('keyboardBgColorPicker').value = keyboardBgColor;
+    document.getElementById('keyboardBorderColorPicker').value = keyboardBorderColor;
+    
+    document.documentElement.style.setProperty('--keyboard-text-color', keyboardTextColor);
+    document.documentElement.style.setProperty('--custom-key-bg', keyboardBgColor);
+    document.documentElement.style.setProperty('--custom-key-border', keyboardBorderColor);
+    
+    document.getElementById('keyboardSizeSlider').value = keyboardSize;
+    document.getElementById('keyboardSizeValue').textContent = Math.round(keyboardSize * 100) + '%';
+    document.getElementById('keyboard').style.transform = `scale(${keyboardSize})`;
+    
+    document.getElementById('soundSelect').value = mistakeSound;
+    currentMistakeSound = mistakeSound;
+    
+    // Load device mode
+    document.getElementById('deviceModeSelect').value = deviceMode;
+    changeDeviceMode();
+    
+    // Load zoom level
+    currentZoomLevel = parseInt(zoom);
+    
+    document.getElementById('textBoxRowsSlider').value = textBoxRows;
+    document.getElementById('textBoxRowsValue').textContent = textBoxRows + ' rows';
+    document.getElementById('textDisplay').style.minHeight = (textBoxRows * 30) + 'px';
+    
+    document.getElementById('keyboardThemeSelect').value = keyboardTheme;
+    const keyboard = document.getElementById('keyboard');
+    keyboard.classList.remove('gaming', 'retro', 'neon');
+    if (keyboardTheme !== 'default') {
+        keyboard.classList.add(keyboardTheme);
+    }
+    
+    // Touch typing is always enabled
+    touchTypingEnabled = true;
+    keyboard.classList.add('touch-typing-enabled');
+    enableKeyboardClicks();
+    
+    // Apply custom keyboard colors
+    setTimeout(() => {
+        applyCustomKeyboardColors();
+    }, 100);
+    
+    // Make panels scrollable
+    makeFullyScrollable();
+}
         
         // Modal functions
         function openLevelsModal() {
@@ -2395,16 +2544,6 @@
             document.getElementById('lessonsModal').classList.remove('open');
             document.body.classList.remove('panel-open');
         }
-        
-// Voice Help Modal Open/Close
-document.getElementById('voiceHelpBtn').onclick = function() {
-    document.getElementById('voiceHelpModal').classList.add('open');
-    document.body.classList.add('panel-open');
-};
-function closeVoiceHelpModal() {
-    document.getElementById('voiceHelpModal').classList.remove('open');
-    document.body.classList.remove('panel-open');
-}
         
         // Load levels into modal
         function loadLevels() {
@@ -2724,15 +2863,15 @@ function closeVoiceHelpModal() {
             }
         }
         
-        // Handle body clicks to close settings
         function handleBodyClick(event) {
-            const settingsPanel = document.getElementById('settingsPanel');
-            const settingsBtn = document.querySelector('.settings-btn');
-            
-            if (!settingsPanel.contains(event.target) && !settingsBtn.contains(event.target)) {
-                settingsPanel.classList.remove('open');
-            }
-        }
+    const settingsPanel = document.getElementById('settingsPanel');
+    const settingsBtn = document.querySelector('.settings-btn');
+    
+    if (!settingsPanel.contains(event.target) && !settingsBtn.contains(event.target)) {
+        settingsPanel.classList.remove('open');
+        document.body.classList.remove('panel-open'); // <-- Add this line
+    }
+}
         
         // Fullscreen functionality - Auto fullscreen with Escape exit allowed
         function toggleFullscreen() {
@@ -2783,6 +2922,65 @@ function closeVoiceHelpModal() {
             }
         }
         
+        // Device mode functionality
+function changeDeviceMode() {
+    const mode = document.getElementById('deviceModeSelect').value;
+    const container = document.querySelector('.container');
+    
+    // Remove existing device mode classes
+    container.classList.remove('device-mode-mobile', 'device-mode-tablet', 'device-mode-desktop');
+    
+    if (mode === 'auto') {
+        // Auto detect based on screen size
+        const width = window.innerWidth;
+        if (width <= 480) {
+            container.classList.add('device-mode-mobile');
+        } else if (width <= 768) {
+            container.classList.add('device-mode-tablet');
+        } else {
+            container.classList.add('device-mode-desktop');
+        }
+    } else {
+        container.classList.add(`device-mode-${mode}`);
+    }
+    
+    localStorage.setItem('deviceMode', mode);
+}
+
+// Keyboard color customization functions
+function changeKeyboardBgColor() {
+    const color = document.getElementById('keyboardBgColorPicker').value;
+    document.documentElement.style.setProperty('--custom-key-bg', color);
+    localStorage.setItem('keyboardBgColor', color);
+    applyCustomKeyboardColors();
+}
+
+function changeKeyboardBorderColor() {
+    const color = document.getElementById('keyboardBorderColorPicker').value;
+    document.documentElement.style.setProperty('--custom-key-border', color);
+    localStorage.setItem('keyboardBorderColor', color);
+    applyCustomKeyboardColors();
+}
+
+function applyCustomKeyboardColors() {
+    document.querySelectorAll('.key').forEach(key => {
+        key.classList.add('custom-color');
+    });
+}
+
+// Enhanced scrollable panels
+function makeFullyScrollable() {
+    const panels = document.querySelectorAll('.settings-panel, .modal-content');
+    panels.forEach(panel => {
+        panel.style.touchAction = 'auto';
+        panel.style.overflowY = 'auto';
+        panel.style.overflowX = 'hidden';
+        panel.style.maxHeight = '95vh';
+        panel.style.overscrollBehavior = 'contain';
+        panel.style.webkitOverflowScrolling = 'touch';
+    });
+}
+        
         // Initialize the application when the page loads
         window.addEventListener('load', init);
         
@@ -2796,144 +2994,6 @@ function closeVoiceHelpModal() {
             overlay.addEventListener('click', startApp);
             overlay.addEventListener('touchstart', startApp);
         });
-        
-        // Voice Assistant Feature (English + Hindi)
-let recognition;
-let recognizing = false;
-
-function initVoiceAssistant() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        document.getElementById('voiceBtn').disabled = true;
-        document.getElementById('voiceBtn').textContent = '🎤 N/A';
-        return;
-    }
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US'; // Hindi: 'hi-IN' for only Hindi
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = function() {
-        recognizing = true;
-        document.getElementById('voiceBtn').textContent = '🎤 Listening...';
-    };
-    recognition.onend = function() {
-        recognizing = false;
-        document.getElementById('voiceBtn').textContent = '🎤 Voice';
-    };
-    recognition.onerror = function(e) {
-        recognizing = false;
-        document.getElementById('voiceBtn').textContent = '🎤 Voice';
-        alert('Voice error: ' + e.error);
-    };
-    recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim().toLowerCase();
-        handleVoiceCommand(transcript);
-    };
-}
-
-function handleVoiceCommand(cmd) {
-    // Lesson/Panel Controls
-    if (cmd.includes('next lesson') || cmd.includes('अगला लेसन')) nextLesson();
-    else if (cmd.includes('restart') || cmd.includes('फिर से शुरू')) restartLesson();
-    else if (cmd.includes('open settings') || cmd.includes('सेटिंग्स खोलो')) toggleSettings();
-    else if (cmd.includes('close settings') || cmd.includes('सेटिंग्स बंद')) closeSettings();
-    else if (cmd.includes('open levels') || cmd.includes('लेवल खोलो')) openLevelsModal();
-    else if (cmd.includes('close levels') || cmd.includes('लेवल बंद')) closeLevelsModal();
-    else if (cmd.includes('open lessons') || cmd.includes('पाठ खोलो')) openLessonsModal();
-    else if (cmd.includes('close lessons') || cmd.includes('पाठ बंद')) closeLessonsModal();
-    else if (cmd.includes('reset settings') || cmd.includes('सेटिंग्स रीसेट')) resetAllSettings();
-    else if (cmd.includes('show stats') || cmd.includes('statistics') || cmd.includes('stat')) showStats();
-
-    // Fullscreen Controls
-    else if (cmd.includes('fullscreen') || cmd.includes('फुल स्क्रीन')) enterFullscreen();
-    else if (cmd.includes('exit fullscreen') || cmd.includes('फुल स्क्रीन बंद')) exitFullscreen();
-
-    // Keyboard Theme Change
-    else if (cmd.includes('keyboard theme') || cmd.includes('कीबोर्ड थीम')) {
-        if (cmd.includes('gaming') || cmd.includes('गेमिंग')) {
-            document.getElementById('keyboardThemeSelect').value = 'gaming';
-            changeKeyboardTheme();
-        } else if (cmd.includes('retro') || cmd.includes('रेट्रो')) {
-            document.getElementById('keyboardThemeSelect').value = 'retro';
-            changeKeyboardTheme();
-        } else if (cmd.includes('neon') || cmd.includes('नियॉन')) {
-            document.getElementById('keyboardThemeSelect').value = 'neon';
-            changeKeyboardTheme();
-        } else if (cmd.includes('default') || cmd.includes('डिफॉल्ट')) {
-            document.getElementById('keyboardThemeSelect').value = 'default';
-            changeKeyboardTheme();
-        } else {
-            alert('Please say: change keyboard theme to gaming/retro/neon/default');
-        }
-    }
-
-    // Keyboard Show/Hide
-    else if (cmd.includes('hide keyboard') || cmd.includes('कीबोर्ड छुपाओ')) {
-        document.getElementById('keyboardVisibilitySelect').value = 'hide';
-        toggleKeyboardVisibility();
-    }
-    else if (cmd.includes('show keyboard') || cmd.includes('कीबोर्ड दिखाओ')) {
-        document.getElementById('keyboardVisibilitySelect').value = 'show';
-        toggleKeyboardVisibility();
-    }
-
-    // Zoom Controls
-    else if (cmd.includes('zoom in') || cmd.includes('ज़ूम इन')) {
-        updateZoomLevel(currentZoomLevel + 10);
-    }
-    else if (cmd.includes('zoom out') || cmd.includes('ज़ूम आउट')) {
-        updateZoomLevel(currentZoomLevel - 10);
-    }
-    else if (cmd.includes('reset zoom') || cmd.includes('ज़ूम रीसेट')) {
-        updateZoomLevel(130);
-    }
-
-    // Voice Typing
-    else if (cmd.startsWith('type ')) {
-        const text = cmd.replace('type ', '');
-        for (let ch of text) processTypedCharacter(ch);
-    }
-    else if (cmd.startsWith('टाइप ')) {
-        const text = cmd.replace('टाइप ', '');
-        for (let ch of text) processTypedCharacter(ch);
-    }
-
-    // Color Change (example: "change keyboard color to red")
-    else if (cmd.includes('keyboard color') || cmd.includes('कीबोर्ड रंग')) {
-        let color = '';
-        if (cmd.includes('red') || cmd.includes('लाल')) color = '#ff0000';
-        else if (cmd.includes('blue') || cmd.includes('नीला')) color = '#0000ff';
-        else if (cmd.includes('green') || cmd.includes('हरा')) color = '#00ff00';
-        else if (cmd.includes('yellow') || cmd.includes('पीला')) color = '#ffff00';
-        else if (cmd.includes('black') || cmd.includes('काला')) color = '#000000';
-        else if (cmd.includes('white') || cmd.includes('सफेद')) color = '#ffffff';
-        if (color) {
-            document.getElementById('keyboardTextColorPicker').value = color;
-            changeKeyboardTextColor();
-        } else {
-            alert('Please say: change keyboard color to red/blue/green/yellow/black/white');
-        }
-    }
-
-    // Fallback
-    else {
-        alert('Voice command not recognized: ' + cmd);
-    }
-}
-
-// Voice button event
-document.addEventListener('DOMContentLoaded', function() {
-    initVoiceAssistant();
-    document.getElementById('voiceBtn').onclick = function() {
-        if (recognizing) {
-            recognition.stop();
-        } else {
-            recognition.start();
-        }
-    };
-});
-        
     </script>
     
     <!-- Fullscreen Overlay for User Interaction -->
