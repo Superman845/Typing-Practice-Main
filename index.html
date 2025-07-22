@@ -89,7 +89,7 @@ body {
     color: var(--text-color);
     transition: all 0.3s ease;
     overflow-x: hidden;
-    zoom: 145%;
+    zoom: 88%;
 }
 
 .container {
@@ -1846,8 +1846,8 @@ body.panel-open {
 
         <div class="setting-group">
             <label class="setting-label">Zoom Level</label>
-            <input class="setting-input" id="zoomSlider" max="200" min="50" oninput="changeZoom()" type="range" value="145"/>
-            <span id="zoomValue">145%</span>
+            <input class="setting-input" id="zoomSlider" max="200" min="50" oninput="changeZoom()" type="range" value="88"/>
+            <span id="zoomValue">88%</span>
         </div>
 
         <div class="setting-group">
@@ -2151,7 +2151,7 @@ body.panel-open {
                         </div>
                         <div class="shortcut-item">
                             <span class="shortcut-key">Ctrl + R</span>
-                            <span class="shortcut-desc">Reset zoom to 145%</span>
+                            <span class="shortcut-desc">Reset zoom to 88%</span>
                         </div>
                                                <div class="shortcut-item">
                             <span class="shortcut-key">Ctrl + D</span>
@@ -2171,7 +2171,7 @@ body.panel-open {
                         </div>
                         <div class="shortcut-item">
                             <span class="shortcut-key">Double Tap</span>
-                            <span class="shortcut-desc">Reset zoom to 145%</span>
+                            <span class="shortcut-desc">Reset zoom to 88%</span>
                         </div>
                         <div class="shortcut-item">
                             <span class="shortcut-key">Triple Tap</span>
@@ -2359,7 +2359,7 @@ body.panel-open {
     <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
 
     <!-- Zoom Indicator -->
-    <div class="zoom-indicator" id="zoomIndicator">145%</div>
+    <div class="zoom-indicator" id="zoomIndicator">88%</div>
 
     <!-- Achievement Notification -->
     <div class="achievement-notification" id="achievementNotification">
@@ -2401,7 +2401,7 @@ let currentMistakeSound = 'sound1';
 let touchTypingEnabled = true;
 
 // Zoom functionality variables
-let currentZoomLevel = 145;
+let currentZoomLevel = 88;
 let tapCount = 0;
 let tapTimer = null;
 let lastTouchDistance = 0;
@@ -3471,9 +3471,9 @@ function handleSmartTap(event) {
                 if (tapCount === 2) {
                     clearTimeout(tapTimer);
                     tapCount = 0;
-                    updateZoomLevel(145);
+                    updateZoomLevel(88);
                     event.preventDefault();
-                    showNotification('👆👆 Double Tap - Zoom Reset to 145%!', 'info');
+                    showNotification('👆👆 Double Tap - Zoom Reset to 88%!', 'info');
                 }
             }, 300);
             
@@ -4314,7 +4314,7 @@ function resetAllSettings() {
         document.getElementById('fontSizeValue').textContent = '35px';
         document.getElementById('textDisplay').style.fontSize = '35px';
         
-        updateZoomLevel(145);
+        updateZoomLevel(88);
         
         document.getElementById('keyboardSizeSlider').value = '1';
         document.getElementById('keyboardSizeValue').textContent = '100%';
@@ -4354,7 +4354,7 @@ function resetAllSettings() {
 function loadSettings() {
     const theme = localStorage.getItem('theme') || 'night';
     const fontSize = localStorage.getItem('fontSize') || '35';
-    const zoom = localStorage.getItem('zoom') || '145';
+    const zoom = localStorage.getItem('zoom') || '88';
     const keyBgColor = localStorage.getItem('keyBgColor') || '#f0f0f0';
     const keyboardTextColor = localStorage.getItem('keyboardTextColor') || '#000000';
     const keyboardSize = localStorage.getItem('keyboardSize') || '1';
@@ -4969,8 +4969,8 @@ function init() {
                     break;
                 case 'r':
                     event.preventDefault();
-                    updateZoomLevel(145);
-                    showZoomFeedback('🔄 Zoom Reset to 145%');
+                    updateZoomLevel(88);
+                    showZoomFeedback('🔄 Zoom Reset to 88%');
                     break;
                 case 'd':
                     event.preventDefault();
@@ -5202,7 +5202,7 @@ Features:
 Keyboard Shortcuts:
 • Ctrl + 0: Reset Zoom
 • Ctrl + +/-: Zoom In/Out
-• Ctrl + R: Reset Zoom to 145%
+• Ctrl + R: Reset Zoom to 88%
 • Ctrl + D: Reset Settings
 • Ctrl + C: Close Panels
 • F11: Toggle Fullscreen
